@@ -64,6 +64,14 @@ body {
   padding-right: 20px;
 }
 
+.topbar .camp-tag {
+  font-family: var(--font-sans);
+  font-size: 10.5px;
+  letter-spacing: 0.06em;
+  color: var(--accent-bright);
+  opacity: 0.8;
+  margin-bottom: 2px;
+}
 .topbar .brand {
   font-family: var(--font-serif);
   font-size: 15px;
@@ -97,17 +105,6 @@ body {
   min-width: 108px;
   text-align: center;
 }
-.timer.warn { color: var(--accent-amber); border-color: var(--accent-amber); }
-.timer.danger {
-  color: var(--accent-red-bright);
-  border-color: var(--accent-red);
-  animation: pulse 1s infinite;
-}
-@keyframes pulse {
-  0%, 100% { box-shadow: 0 0 0 0 rgba(232,80,60,0.35); }
-  50% { box-shadow: 0 0 0 6px rgba(232,80,60,0); }
-}
-
 .sos-btn {
   font-family: var(--font-sans);
   font-size: 13px;
@@ -523,6 +520,19 @@ details.knowledge .kbody li { margin-bottom: 4px; }
   text-align: center;
   margin-bottom: 30px;
 }
+.camp-badge {
+  display: inline-block;
+  font-family: var(--font-sans);
+  font-size: 12.5px;
+  font-weight: 600;
+  letter-spacing: 0.1em;
+  color: var(--accent-bright);
+  background: rgba(77,191,168,0.08);
+  border: 1px solid rgba(77,191,168,0.35);
+  border-radius: 999px;
+  padding: 5px 16px;
+  margin-bottom: 16px;
+}
 .brief-header .kicker {
   font-family: var(--font-mono);
   font-size: 12px;
@@ -635,18 +645,58 @@ details.knowledge .kbody li { margin-bottom: 4px; }
 .certificate {
   margin-top: 30px;
   border: 2px solid var(--accent-bright);
-  border-radius: 6px;
-  padding: 44px 40px;
+  border-radius: 8px;
+  padding: 50px 46px 40px;
   position: relative;
-  background: linear-gradient(180deg, #10161c, #0c1216);
+  background:
+    radial-gradient(ellipse at top, rgba(77,191,168,0.06), transparent 60%),
+    linear-gradient(180deg, #10161c, #0c1216);
+  text-align: center;
 }
 .certificate::before {
   content: "";
   position: absolute;
-  inset: 8px;
+  inset: 9px;
   border: 1px solid rgba(77,191,168,0.35);
-  border-radius: 3px;
+  border-radius: 4px;
   pointer-events: none;
+}
+.cert-corner {
+  position: absolute;
+  width: 22px;
+  height: 22px;
+  border: 2px solid var(--accent-bright);
+  opacity: 0.8;
+}
+.cert-corner.tl { top: -2px; left: -2px; border-right: none; border-bottom: none; }
+.cert-corner.tr { top: -2px; right: -2px; border-left: none; border-bottom: none; }
+.cert-corner.bl { bottom: -2px; left: -2px; border-right: none; border-top: none; }
+.cert-corner.br { bottom: -2px; right: -2px; border-left: none; border-top: none; }
+
+.cert-seal { color: var(--accent-bright); margin: 0 auto 6px; display: block; width: 92px; height: 92px; }
+.cert-course-badge {
+  display: inline-block;
+  font-family: var(--font-sans);
+  font-size: 12px;
+  font-weight: 700;
+  letter-spacing: 0.35em;
+  color: var(--accent-amber);
+  margin: 4px 0 2px;
+  padding-left: 0.35em; /* 視覺補償 letter-spacing 造成的置中偏移 */
+}
+.cert-course-en {
+  font-family: var(--font-mono);
+  font-size: 9.5px;
+  letter-spacing: 0.15em;
+  color: var(--text-dim);
+  margin-bottom: 18px;
+}
+.cert-activity-name {
+  font-family: var(--font-serif);
+  font-size: 13px;
+  color: var(--text-dim);
+  letter-spacing: 0.08em;
+  margin-bottom: 6px;
 }
 .cert-kicker {
   font-family: var(--font-mono);
@@ -656,20 +706,33 @@ details.knowledge .kbody li { margin-bottom: 4px; }
 }
 .cert-title {
   font-family: var(--font-serif);
-  font-size: 26px;
-  margin: 10px 0 26px;
+  font-size: 27px;
+  margin: 8px 0 24px;
+  position: relative;
+  display: inline-block;
+  padding-bottom: 14px;
 }
+.cert-title::after {
+  content: "";
+  position: absolute;
+  bottom: 0; left: 50%;
+  transform: translateX(-50%);
+  width: 64px; height: 2px;
+  background: var(--accent-bright);
+  opacity: 0.7;
+}
+.cert-team-label { font-size: 12px; color: var(--text-dim); letter-spacing: 0.15em; margin-bottom: 6px; }
 .cert-team {
   font-family: var(--font-serif);
-  font-size: 30px;
+  font-size: 32px;
   color: var(--accent-bright);
-  margin: 10px 0;
-  padding-bottom: 10px;
+  margin: 0 0 10px;
+  padding-bottom: 12px;
   border-bottom: 1px solid var(--border-soft);
   display: inline-block;
-  min-width: 260px;
+  min-width: 280px;
 }
-.cert-body { font-size: 14px; color: var(--text-muted); line-height: 1.9; margin: 18px 0; }
+.cert-body { font-size: 14px; color: var(--text-muted); line-height: 1.9; margin: 20px auto; max-width: 460px; }
 .cert-meta {
   display: flex;
   justify-content: center;
@@ -680,6 +743,25 @@ details.knowledge .kbody li { margin-bottom: 4px; }
 }
 .cert-meta strong { display: block; color: var(--text); font-size: 15px; font-family: var(--font-mono); }
 
+.cert-signoff {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-end;
+  margin-top: 46px;
+  padding-top: 18px;
+  border-top: 1px dashed var(--border-soft);
+  text-align: left;
+  gap: 20px;
+}
+.cert-signoff .sig-block { font-size: 11.5px; color: var(--text-dim); letter-spacing: 0.05em; }
+.cert-signoff .sig-line {
+  display: block;
+  width: 150px;
+  border-bottom: 1px solid var(--border-soft);
+  height: 26px;
+}
+.cert-signoff .sig-date { text-align: right; }
+
 /* ---------- footer ---------- */
 .foot-note {
   text-align: center;
@@ -687,6 +769,17 @@ details.knowledge .kbody li { margin-bottom: 4px; }
   font-size: 12px;
   margin-top: 30px;
 }
+.staff-link-btn {
+  margin-top: 10px;
+  background: none;
+  border: none;
+  color: var(--text-dim);
+  font-size: 11px;
+  text-decoration: underline;
+  cursor: pointer;
+  padding: 4px;
+}
+.staff-link-btn:hover { color: var(--accent-amber); }
 
 /* ---------- 列印 ---------- */
 @media print {
@@ -702,8 +795,14 @@ details.knowledge .kbody li { margin-bottom: 4px; }
     box-shadow: none;
   }
   .certificate::before { border-color: #999; }
-  .cert-title, .cert-team, .cert-kicker, .cert-meta strong { color: #111 !important; }
+  .cert-title, .cert-team, .cert-kicker, .cert-meta strong,
+  .cert-team-label, .cert-activity-name, .cert-course-en { color: #111 !important; }
   .cert-body, .cert-meta { color: #333 !important; }
+  .cert-seal, .cert-corner { color: #333 !important; border-color: #333 !important; }
+  .cert-course-badge { color: #333 !important; }
+  .cert-title::after { background: #333 !important; }
+  .cert-signoff { border-top-color: #999 !important; }
+  .cert-signoff .sig-block, .cert-signoff .sig-line { color: #333 !important; border-color: #999 !important; }
   #app { max-width: 100%; padding: 0; }
 }
 

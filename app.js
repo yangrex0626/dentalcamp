@@ -24,18 +24,17 @@ const els = {
   storyText: document.getElementById("story-text"),
   storyNextBtn: document.getElementById("story-next-btn"),
   endPanel: document.getElementById("end-panel"),
+  endSessionBtn: document.getElementById("end-session-btn"),
 };
 
 let state = {
   teamName: "",
   started: false,
-  endTimestamp: null,
   currentStage: 0,
   solved: STAGES.map(() => false),
   hintsUsed: STAGES.map(() => 0),
   sosUsedTotal: 0,
   finished: false,
-  timeUp: false,
   finishTimestamp: null,
   startTimestamp: null,
   decisionState: {},
@@ -67,11 +66,11 @@ function init() {
   els.conventionsText.innerHTML = CONVENTIONS_TEXT;
 
   const restored = loadState();
-  if (restored && !state.finished && !state.timeUp) {
+  if (restored && !state.finished) {
     enterGameScreen();
     return;
   }
-  if (restored && (state.finished || state.timeUp)) {
+  if (restored && state.finished) {
     enterEndScreen();
     return;
   }
@@ -91,7 +90,6 @@ function handleStart() {
   state.teamName = name;
   state.started = true;
   state.startTimestamp = Date.now();
-  state.endTimestamp = Date.now() + GAME_DURATION_SECONDS * 1000;
   saveState();
   enterGameScreen();
 }
@@ -126,22 +124,19 @@ function stopTimer() {
   if (timerInterval) { clearInterval(timerInterval); timerInterval = null; }
 }
 function tickTimer() {
-  const remainingMs = state.endTimestamp - Date.now();
-  const remainingSec = Math.max(0, Math.ceil(remainingMs / 1000));
-  renderTimer(remainingSec);
-  if (remainingSec <= 0 && !state.finished) {
-    state.timeUp = true;
-    saveState();
-    enterEndScreen();
-  }
+  const elapsedSec = Math.max(0, Math.floor((Date.now() - state.startTimestamp) / 1000));
+  renderTimer(elapsedSec);
 }
 function renderTimer(sec) {
-  const m = Math.floor(sec / 60);
+  els.timerDisplay.textContent = formatDuration(sec);
+}
+function formatDuration(sec) {
+  const h = Math.floor(sec / 3600);
+  const m = Math.floor((sec % 3600) / 60);
   const s = sec % 60;
-  els.timerDisplay.textContent = `${String(m).padStart(2, "0")}:${String(s).padStart(2, "0")}`;
-  els.timerDisplay.classList.remove("warn", "danger");
-  if (sec <= 300) els.timerDisplay.classList.add("danger");
-  else if (sec <= 900) els.timerDisplay.classList.add("warn");
+  return h > 0
+    ? `${h}:${String(m).padStart(2, "0")}:${String(s).padStart(2, "0")}`
+    : `${String(m).padStart(2, "0")}:${String(s).padStart(2, "0")}`;
 }
 
 /* ---------- 進度列 ---------- */
@@ -325,6 +320,25 @@ els.sosBtn.addEventListener("click", () => {
   renderStage();
 });
 
+/* ---------- 工作人員：提前結束任務 ---------- */
+if (els.endSessionBtn) {
+  els.endSessionBtn.addEventListener("click", () => {
+    if (els.endSessionBtn.dataset.armed === "1") {
+      state.finished = true;
+      state.finishTimestamp = Date.now();
+      saveState();
+      enterEndScreen();
+      return;
+    }
+    els.endSessionBtn.dataset.armed = "1";
+    els.endSessionBtn.textContent = "再按一次確認結束（將直接前往結案畫面）";
+    setTimeout(() => {
+      els.endSessionBtn.dataset.armed = "0";
+      els.endSessionBtn.textContent = "工作人員專用：提前結束本隊任務";
+    }, 4000);
+  });
+}
+
 /* ---------- 互動決策樹（證物⑨等） ---------- */
 function renderDecisionTree(stage) {
   const mount = document.getElementById("decision-tree-mount");
@@ -461,16 +475,10 @@ function buildStephanSVG() {
 /* ---------- 結局頁 ---------- */
 function renderEnd() {
   const solvedCount = state.solved.filter(Boolean).length;
-  const success = state.finished && solvedCount === STAGES.length;
+  const success = solvedCount === STAGES.length;
 
-  let elapsedSec;
-  if (success && state.finishTimestamp) {
-    elapsedSec = Math.round((state.finishTimestamp - state.startTimestamp) / 1000);
-  } else {
-    elapsedSec = GAME_DURATION_SECONDS;
-  }
-  const em = Math.floor(elapsedSec / 60), es = elapsedSec % 60;
-  const elapsedStr = `${String(em).padStart(2, "0")}:${String(es).padStart(2, "0")}`;
+  const elapsedSec = Math.max(0, Math.round((state.finishTimestamp - state.startTimestamp) / 1000));
+  const elapsedStr = formatDuration(elapsedSec);
 
   const now = new Date();
   const dateStr = `${now.getFullYear()}/${String(now.getMonth() + 1).padStart(2, "0")}/${String(now.getDate()).padStart(2, "0")}`;
@@ -479,7 +487,7 @@ function renderEnd() {
     els.endPanel.innerHTML = `
       <div class="end-badge success">CASE CLOSED</div>
       <h1 class="end-title-only">結案：A19 病歷重建完成</h1>
-      <p style="color:var(--text-muted); font-size:14px;">隊伍「${escapeHtml(state.teamName)}」已於時限內完整重建九份證物。</p>
+      <p style="color:var(--text-muted); font-size:14px;">隊伍「${escapeHtml(state.teamName)}」已完整重建九份證物。</p>
       <div class="end-stats">
         <div class="stat-box"><div class="num">${elapsedStr}</div><div class="lbl">完成用時</div></div>
         <div class="stat-box"><div class="num">${state.sosUsedTotal}</div><div class="lbl">SOS 使用次數</div></div>
@@ -494,15 +502,15 @@ function renderEnd() {
     `;
   } else {
     els.endPanel.innerHTML = `
-      <div class="end-badge timeout">TIME EXPIRED</div>
-      <h1 class="end-title-only">時限已到：任務中止</h1>
-      <p style="color:var(--text-muted); font-size:14px;">隊伍「${escapeHtml(state.teamName)}」在 100 分鐘內完成了 ${solvedCount} / 9 份證物的重建。</p>
+      <div class="end-badge timeout">SESSION ENDED</div>
+      <h1 class="end-title-only">任務提前結束</h1>
+      <p style="color:var(--text-muted); font-size:14px;">隊伍「${escapeHtml(state.teamName)}」完成了 ${solvedCount} / 9 份證物的重建（任務由工作人員手動結束）。</p>
       <div class="end-stats">
         <div class="stat-box"><div class="num">${solvedCount} / 9</div><div class="lbl">證物完成度</div></div>
         <div class="stat-box"><div class="num">${state.sosUsedTotal}</div><div class="lbl">SOS 使用次數</div></div>
       </div>
       <p style="color:var(--text-muted); font-size:14px; max-width:520px; margin:0 auto 20px;">
-        資料損毀過於嚴重，小組未能在時限內完成完整診斷報告。院方感謝各位的努力，A19 的完整病歷將交由下一組繼續調查。
+        院方感謝各位小組的努力，這段調查歷程已列入紀錄。A19 的完整病歷將交由下一組繼續調查。
       </p>
       <div class="cert-btn-row">
         <button class="start-btn" id="print-cert-btn">列印任務參與證明</button>
@@ -534,18 +542,32 @@ function renderEnd() {
 function buildCertificateHtml(elapsedStr, dateStr, success) {
   return `
     <div class="certificate">
-      <div class="cert-kicker">TEACHING HOSPITAL · ORAL &amp; MAXILLOFACIAL DEPARTMENT</div>
-      <div class="cert-title">臨床資料重建行動 ${success ? "結案證明" : "任務參與證明"}</div>
+      <div class="cert-corner tl"></div><div class="cert-corner tr"></div>
+      <div class="cert-corner bl"></div><div class="cert-corner br"></div>
+
+      ${CERT_SEAL_SVG}
+      <div class="cert-course-badge">${COURSE_NAME}</div>
+      <div class="cert-course-en">CRITICAL THINKING CHALLENGE</div>
+      <div class="cert-activity-name">臨床資料重建行動</div>
+
+      <div class="cert-title">${success ? "結案證明" : "任務參與證明"}</div>
+
+      <div class="cert-team-label">茲證明</div>
       <div class="cert-team">${escapeHtml(state.teamName)}</div>
       <div class="cert-body">
         ${success
-          ? "本隊於時限內完整重建病患 A19 的九份臨床證物，成功產出診斷報告，特此證明。"
-          : "本隊參與病患 A19 病歷重建任務，於時限內完成部分證物重建，特此證明。"}
+          ? "已完整重建病患 A19 的九份臨床證物，成功產出診斷報告，展現嚴謹的臨床推理能力，特此證明。"
+          : "已參與病患 A19 病歷重建任務，並完成部分證物重建，特此證明。"}
       </div>
       <div class="cert-meta">
         <div><strong>${elapsedStr}</strong>${success ? "完成用時" : "任務時長"}</div>
         <div><strong>${state.solved.filter(Boolean).length} / 9</strong>證物完成度</div>
         <div><strong>${dateStr}</strong>日期</div>
+      </div>
+
+      <div class="cert-signoff">
+        <div class="sig-block">課程負責人簽章<span class="sig-line"></span></div>
+        <div class="sig-block sig-date">${CAMP_NAME}<span class="sig-line"></span></div>
       </div>
     </div>
   `;

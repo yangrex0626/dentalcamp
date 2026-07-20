@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>臨床資料重建行動｜牙醫營解謎任務</title>
+<title>臨床資料重建行動｜國防醫學大學 口腔醫學營・思維挑戰</title>
 <link rel="stylesheet" href="style.css">
 </head>
 <body>
@@ -13,9 +13,10 @@
   <!-- ============ 開場：隊名輸入 ============ -->
   <section id="screen-brief" class="brief-screen">
     <div class="brief-header">
+      <div class="camp-badge">國防醫學大學 口腔醫學營　·　思維挑戰</div>
       <div class="kicker">CASE FILE A19 — RESTRICTED</div>
       <h1>臨床資料重建行動</h1>
-      <div class="sub">教學醫院口腔顎面部門 · 病歷重建任務 · 建議時長 100 分鐘</div>
+      <div class="sub">教學醫院口腔顎面部門 · 病歷重建任務 · 全程計時，無時間限制</div>
     </div>
     <div class="panel">
       <div class="case-tag">任務簡報</div>
@@ -36,12 +37,13 @@
   <section id="screen-game" class="hidden">
     <div class="topbar">
       <div>
+        <div class="camp-tag">國防醫學大學 口腔醫學營 · 思維挑戰</div>
         <div class="brand"><strong>臨床資料重建行動</strong> · A19 病歷重建</div>
         <div class="team-name" id="topbar-team"></div>
       </div>
       <div class="topbar-right">
         <button class="sos-btn" id="sos-btn">SOS 求救提示（已用 <span id="sos-count">0</span> 次）</button>
-        <div class="timer" id="timer-display">100:00</div>
+        <div class="timer" id="timer-display">00:00</div>
       </div>
     </div>
 
@@ -49,7 +51,11 @@
 
     <div class="panel stage-panel" id="stage-panel"></div>
 
-    <div class="foot-note">每組每次可使用 SOS 提示查看下一條線索 · 提示會依關卡累計顯示</div>
+    <div class="foot-note">
+      每組每次可使用 SOS 提示查看下一條線索 · 提示會依關卡累計顯示
+      <br>
+      <button class="staff-link-btn" id="end-session-btn">工作人員專用：提前結束本隊任務</button>
+    </div>
   </section>
 
   <!-- ============ 過關 / 劇情 覆蓋層 ============ -->
