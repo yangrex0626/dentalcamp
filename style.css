@@ -64,6 +64,20 @@ body {
   padding-right: 20px;
 }
 
+.topbar-left {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+.topbar-logo {
+  width: 34px;
+  height: 34px;
+  border-radius: 50%;
+  object-fit: cover;
+  flex-shrink: 0;
+  box-shadow: 0 0 0 1px var(--border);
+}
+
 .topbar .camp-tag {
   font-family: var(--font-sans);
   font-size: 10.5px;
@@ -520,6 +534,15 @@ details.knowledge .kbody li { margin-bottom: 4px; }
   text-align: center;
   margin-bottom: 30px;
 }
+.brief-logo {
+  display: block;
+  width: 96px;
+  height: 96px;
+  margin: 0 auto 16px;
+  border-radius: 50%;
+  object-fit: cover;
+  box-shadow: 0 0 0 3px var(--accent-bright), 0 8px 24px rgba(0,0,0,0.4);
+}
 .camp-badge {
   display: inline-block;
   font-family: var(--font-sans);
@@ -673,7 +696,15 @@ details.knowledge .kbody li { margin-bottom: 4px; }
 .cert-corner.bl { bottom: -2px; left: -2px; border-right: none; border-top: none; }
 .cert-corner.br { bottom: -2px; right: -2px; border-left: none; border-top: none; }
 
-.cert-seal { color: var(--accent-bright); margin: 0 auto 6px; display: block; width: 92px; height: 92px; }
+.cert-seal {
+  display: block;
+  width: 108px;
+  height: 108px;
+  margin: 0 auto 10px;
+  border-radius: 50%;
+  object-fit: cover;
+  box-shadow: 0 0 0 3px var(--accent-bright), 0 6px 18px rgba(0,0,0,0.45);
+}
 .cert-course-badge {
   display: inline-block;
   font-family: var(--font-sans);
@@ -798,7 +829,8 @@ details.knowledge .kbody li { margin-bottom: 4px; }
   .cert-title, .cert-team, .cert-kicker, .cert-meta strong,
   .cert-team-label, .cert-activity-name, .cert-course-en { color: #111 !important; }
   .cert-body, .cert-meta { color: #333 !important; }
-  .cert-seal, .cert-corner { color: #333 !important; border-color: #333 !important; }
+  .cert-seal { box-shadow: 0 0 0 2px #333; }
+  .cert-corner { border-color: #333 !important; }
   .cert-course-badge { color: #333 !important; }
   .cert-title::after { background: #333 !important; }
   .cert-signoff { border-top-color: #999 !important; }
@@ -847,6 +879,8 @@ details.knowledge .kbody li { margin-bottom: 4px; }
   .sos-btn { flex: 1; font-size: 12.5px; padding: 10px 8px; }
   .timer { flex: 0 0 auto; font-size: 20px; min-width: 84px; padding: 8px; }
   .brand { font-size: 13px; }
+  .topbar-logo { width: 28px; height: 28px; }
+  .brief-logo { width: 76px; height: 76px; }
 
   .progress-track { gap: 4px; margin-bottom: 20px; }
   .progress-dot { min-width: 14px; height: 5px; }

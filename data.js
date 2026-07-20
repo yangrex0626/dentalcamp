@@ -4,23 +4,10 @@
 
 const CAMP_NAME = "國防醫學大學 口腔醫學營";
 const COURSE_NAME = "思維挑戰";
+const LOGO_SRC = "assets/dental-camp-logo.jpg";
 
-/* ---------- 證書印章（SVG，顏色由外部 CSS currentColor 控制） ---------- */
-const CERT_SEAL_SVG = `
-<svg class="cert-seal" viewBox="0 0 160 160" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" fill="none" stroke="currentColor">
-  <circle cx="80" cy="80" r="74" stroke-width="1.5"/>
-  <circle cx="80" cy="80" r="65" stroke-width="1"/>
-  <path id="cert-seal-top" d="M 18,80 A 62,62 0 0 1 142,80" fill="none" stroke="none"/>
-  <path id="cert-seal-bottom" d="M 142,84 A 62,62 0 0 1 18,84" fill="none" stroke="none"/>
-  <text font-size="13" letter-spacing="2" fill="currentColor" stroke="none">
-    <textPath xlink:href="#cert-seal-top" startOffset="50%" text-anchor="middle">國防醫學大學</textPath>
-  </text>
-  <text font-size="11" letter-spacing="3" fill="currentColor" stroke="none">
-    <textPath xlink:href="#cert-seal-bottom" startOffset="50%" text-anchor="middle">口腔醫學營</textPath>
-  </text>
-  <path d="M80 50c-10 0-18 8-18 19 0 10 3.5 18 7 26 2.5 5.5 3 11 5.5 11s2.5-5.5 4-10.5 1.5-6 1.5-6 0.5 1 1.5 6 1.5 10.5 4 10.5 3-5.5 5.5-11c3.5-8 7-16 7-26 0-11-8-19-18-19z" fill="currentColor" stroke="none" opacity="0.92"/>
-</svg>
-`;
+/* ---------- 證書印章（使用營隊官方 Logo） ---------- */
+const CERT_SEAL_SVG = `<img class="cert-seal" src="${LOGO_SRC}" alt="${CAMP_NAME} Logo">`;
 
 const BRIEFING_TEXT = `
 你是教學醫院口腔顎面部門新成立的「臨床資料重建小組」成員。<br><br>
