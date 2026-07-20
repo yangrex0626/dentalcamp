@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>臨床資料重建行動｜牙醫營解謎任務</title>
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+<div id="app">
+
+  <!-- ============ 開場：隊名輸入 ============ -->
+  <section id="screen-brief" class="brief-screen">
+    <div class="brief-header">
+      <div class="kicker">CASE FILE A19 — RESTRICTED</div>
+      <h1>臨床資料重建行動</h1>
+      <div class="sub">教學醫院口腔顎面部門 · 病歷重建任務 · 建議時長 100 分鐘</div>
+    </div>
+    <div class="panel">
+      <div class="case-tag">任務簡報</div>
+      <div class="brief-text" id="briefing-text"></div>
+      <details class="knowledge" open>
+        <summary>解謎慣例說明（請務必先讀）</summary>
+        <div class="kbody" id="conventions-text"></div>
+      </details>
+      <div class="team-form">
+        <input type="text" id="team-name-input" placeholder="請輸入你們的小組隊名" maxlength="20" autocomplete="off">
+        <button class="start-btn" id="start-btn">開始任務，啟動計時</button>
+      </div>
+      <div class="form-err" id="team-form-err"></div>
+    </div>
+  </section>
+
+  <!-- ============ 遊戲主畫面 ============ -->
+  <section id="screen-game" class="hidden">
+    <div class="topbar">
+      <div>
+        <div class="brand"><strong>臨床資料重建行動</strong> · A19 病歷重建</div>
+        <div class="team-name" id="topbar-team"></div>
+      </div>
+      <div class="topbar-right">
+        <button class="sos-btn" id="sos-btn">SOS 求救提示（已用 <span id="sos-count">0</span> 次）</button>
+        <div class="timer" id="timer-display">100:00</div>
+      </div>
+    </div>
+
+    <div class="progress-track" id="progress-track"></div>
+
+    <div class="panel stage-panel" id="stage-panel"></div>
+
+    <div class="foot-note">每組每次可使用 SOS 提示查看下一條線索 · 提示會依關卡累計顯示</div>
+  </section>
+
+  <!-- ============ 過關 / 劇情 覆蓋層 ============ -->
+  <div id="story-overlay" class="story-overlay hidden">
+    <div class="story-card">
+      <div class="story-stamp">VERIFIED ✓</div>
+      <div class="story-title" id="story-title"></div>
+      <div class="story-text" id="story-text"></div>
+      <button class="story-next-btn" id="story-next-btn">繼續調查</button>
+    </div>
+  </div>
+
+  <!-- ============ 結局頁 ============ -->
+  <section id="screen-end" class="hidden end-screen">
+    <div class="panel" id="end-panel"></div>
+  </section>
+
+</div>
+
+<script src="data.js"></script>
+<script src="app.js"></script>
+</body>
+</html>
