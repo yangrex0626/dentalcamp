@@ -38,6 +38,7 @@ let state = {
   finishTimestamp: null,
   startTimestamp: null,
   decisionState: {},
+  feedbackReported: false,
 };
 
 let timerInterval = null;
@@ -62,7 +63,11 @@ function clearState() {
 
 /* ---------- 初始化 ---------- */
 function init() {
-  els.briefingText.innerHTML = BRIEFING_TEXT;
+  initEmailJS();
+  els.briefingText.innerHTML = BRIEFING_TEXT
+    + (isEmailJSConfigured()
+      ? '<p class="disclosure-note">🔔 這是測試場次：完成或結束任務後，隊名與完成度會自動回報給主辦單位，協助抓出問題與調整活動。</p>'
+      : "");
   els.conventionsText.innerHTML = CONVENTIONS_TEXT;
 
   const restored = loadState();
@@ -543,13 +548,28 @@ function renderEnd() {
   wireFeedbackPanel();
 }
 
-/* ---------- 測試回饋（需測試者主動送出，不做背景追蹤） ---------- */
+/* ---------- 測試回饋 ---------- */
+function isEmailJSConfigured() {
+  return typeof emailjs !== "undefined"
+    && !EMAILJS_PUBLIC_KEY.startsWith("YOUR_")
+    && !EMAILJS_SERVICE_ID.startsWith("YOUR_")
+    && !EMAILJS_TEMPLATE_ID.startsWith("YOUR_");
+}
+
+function initEmailJS() {
+  if (isEmailJSConfigured()) {
+    emailjs.init({ publicKey: EMAILJS_PUBLIC_KEY });
+  }
+}
+
 function buildFeedbackHtml() {
+  const auto = isEmailJSConfigured();
   return `
     <div class="panel feedback-panel">
       <div class="case-tag">測試回饋</div>
-      <p class="feedback-intro">如果這是測試場次，麻煩花 30 秒留下這些資訊，幫助我們抓出問題。
-      下面的內容完全由你決定要不要送出，我們不會在背景偷偷蒐集任何資料。</p>
+      <p class="feedback-intro">${auto
+        ? "這是測試場次：完成或結束任務後，隊名與完成度會自動回報給主辦單位，協助抓出問題。想補充說明的話，可以在下面留言後再送一次。"
+        : "如果這是測試場次，麻煩花 30 秒留下這些資訊，幫助我們抓出問題。下面的內容完全由你決定要不要送出。"}</p>
       <div class="feedback-summary" id="feedback-summary"></div>
       <div class="input-group single" style="width:100%;">
         <label>遇到的問題／建議（選填）</label>
@@ -557,7 +577,7 @@ function buildFeedbackHtml() {
       </div>
       <div class="cert-btn-row">
         <button class="start-btn" id="copy-feedback-btn">複製回饋內容</button>
-        <button class="sos-btn" id="email-feedback-btn">用 Email 寄出回饋</button>
+        <button class="sos-btn" id="email-feedback-btn">${auto ? "送出留言" : "用 Email 寄出回饋"}</button>
       </div>
       <div class="feedback-status" id="feedback-status"></div>
     </div>
@@ -585,6 +605,20 @@ function buildFeedbackSummaryText(notes) {
   return lines.join("\n");
 }
 
+function sendViaEmailJS(text, statusEl, pendingMsg, okMsg, failMsg) {
+  statusEl.textContent = pendingMsg;
+  return emailjs.send(EMAILJS_SERVICE_ID, EMAILJS_TEMPLATE_ID, {
+    team_name: state.teamName,
+    message: text,
+  }).then(() => {
+    statusEl.textContent = okMsg;
+    return true;
+  }).catch(() => {
+    statusEl.textContent = failMsg;
+    return false;
+  });
+}
+
 function wireFeedbackPanel() {
   const summaryEl = document.getElementById("feedback-summary");
   const notesEl = document.getElementById("feedback-notes");
@@ -609,12 +643,32 @@ function wireFeedbackPanel() {
     }
   });
 
-  emailBtn.addEventListener("click", () => {
-    const text = buildFeedbackSummaryText(notesEl.value);
-    const subject = encodeURIComponent(`臨床資料重建行動 測試回饋 - ${state.teamName}`);
-    const body = encodeURIComponent(text);
-    window.location.href = `mailto:${FEEDBACK_EMAIL}?subject=${subject}&body=${body}`;
-  });
+  if (isEmailJSConfigured()) {
+    emailBtn.addEventListener("click", () => {
+      const text = buildFeedbackSummaryText(notesEl.value);
+      sendViaEmailJS(text, statusEl, "送出中……", "留言已送出，謝謝！", "送出失敗，請改用複製按鈕貼給我們。");
+    });
+
+    if (!state.feedbackReported) {
+      const baseText = buildFeedbackSummaryText("");
+      sendViaEmailJS(baseText, statusEl, "正在自動回報測試結果……", "已自動回報，謝謝你的測試協助！", "自動回報失敗，請改用下面的按鈕手動送出。")
+        .then((ok) => {
+          if (ok) {
+            state.feedbackReported = true;
+            saveState();
+          }
+        });
+    } else {
+      statusEl.textContent = "這次任務的結果已經回報過了，補充留言可以再按一次「送出留言」。";
+    }
+  } else {
+    emailBtn.addEventListener("click", () => {
+      const text = buildFeedbackSummaryText(notesEl.value);
+      const subject = encodeURIComponent(`臨床資料重建行動 測試回饋 - ${state.teamName}`);
+      const body = encodeURIComponent(text);
+      window.location.href = `mailto:${FEEDBACK_EMAIL}?subject=${subject}&body=${body}`;
+    });
+  }
 }
 
 function buildCertificateHtml(elapsedStr, dateStr, success) {

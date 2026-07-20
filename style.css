@@ -587,6 +587,16 @@ details.knowledge .kbody li { margin-bottom: 4px; }
   color: var(--text);
   margin-bottom: 30px;
 }
+.disclosure-note {
+  font-size: 13px;
+  line-height: 1.8;
+  color: var(--accent-amber);
+  background: rgba(201,138,58,0.08);
+  border: 1px solid rgba(201,138,58,0.3);
+  border-radius: 5px;
+  padding: 10px 14px;
+  margin: -14px 0 30px;
+}
 .team-form {
   display: flex;
   gap: 12px;

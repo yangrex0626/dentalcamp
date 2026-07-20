@@ -8,6 +8,18 @@ const SIGNATORY_NAME = "Yang Chen Hsin";
 const LOGO_SRC = "assets/dental-camp-logo.jpg";
 const FEEDBACK_EMAIL = "rexyang2005@gmail.com"; // 測試回饋預設寄送對象，需要的話直接改這裡
 
+/* ---------- EmailJS（自動回報測試結果用）----------
+   到 https://www.emailjs.com/ 申請免費帳號後，把下面三個值換成你自己的：
+   1. Email Services → Add New Service → 連接 Gmail → 複製 Service ID
+   2. Email Templates → Create New Template → To Email 填 FEEDBACK_EMAIL，
+      內文隨意用 {{team_name}} 和 {{message}} 兩個變數 → 複製 Template ID
+   3. Account → General → 複製 Public Key
+   三個值都還是 "YOUR_..." 的話，系統會自動略過自動回報，只保留手動複製/寄信按鈕。
+------------------------------------------------------------------- */
+const EMAILJS_PUBLIC_KEY = "YOUR_EMAILJS_PUBLIC_KEY";
+const EMAILJS_SERVICE_ID = "YOUR_EMAILJS_SERVICE_ID";
+const EMAILJS_TEMPLATE_ID = "YOUR_EMAILJS_TEMPLATE_ID";
+
 /* ---------- 證書印章（使用營隊官方 Logo） ---------- */
 const CERT_SEAL_SVG = `<img class="cert-seal" src="${LOGO_SRC}" alt="${CAMP_NAME} Logo">`;
 
