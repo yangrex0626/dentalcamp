@@ -2,6 +2,15 @@
    臨床資料重建行動 — 樣式
    ============================================================ */
 
+/* Great Vibes（SIL Open Font License）自行託管，供證書簽名使用，避免現場依賴外部字型 CDN */
+@font-face {
+  font-family: "Great Vibes";
+  src: url("assets/GreatVibes-Regular.ttf") format("truetype");
+  font-weight: 400;
+  font-style: normal;
+  font-display: swap;
+}
+
 :root {
   --bg: #0b0f13;
   --bg-panel: #12181e;
@@ -785,13 +794,30 @@ details.knowledge .kbody li { margin-bottom: 4px; }
   gap: 20px;
 }
 .cert-signoff .sig-block { font-size: 11.5px; color: var(--text-dim); letter-spacing: 0.05em; }
+.cert-signoff .sig-name {
+  display: block;
+  font-family: "Great Vibes", "Segoe Script", "Brush Script MT", cursive;
+  font-size: 32px;
+  color: var(--accent-bright);
+  line-height: 1;
+  margin-bottom: -2px;
+  white-space: nowrap;
+}
 .cert-signoff .sig-line {
   display: block;
   width: 150px;
   border-bottom: 1px solid var(--border-soft);
-  height: 26px;
+  height: 20px;
 }
+.cert-signoff .sig-caption { display: block; margin-top: 6px; }
 .cert-signoff .sig-date { text-align: right; }
+.cert-signoff .sig-camp-name {
+  display: block;
+  font-family: var(--font-serif);
+  font-size: 14px;
+  color: var(--text-muted);
+  margin-bottom: 6px;
+}
 
 /* ---------- footer ---------- */
 .foot-note {
@@ -835,6 +861,8 @@ details.knowledge .kbody li { margin-bottom: 4px; }
   .cert-title::after { background: #333 !important; }
   .cert-signoff { border-top-color: #999 !important; }
   .cert-signoff .sig-block, .cert-signoff .sig-line { color: #333 !important; border-color: #999 !important; }
+  .cert-signoff .sig-name { color: #1a1a2e !important; }
+  .cert-signoff .sig-camp-name { color: #111 !important; }
   #app { max-width: 100%; padding: 0; }
 }
 

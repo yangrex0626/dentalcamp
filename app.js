@@ -566,8 +566,14 @@ function buildCertificateHtml(elapsedStr, dateStr, success) {
       </div>
 
       <div class="cert-signoff">
-        <div class="sig-block">課程負責人簽章<span class="sig-line"></span></div>
-        <div class="sig-block sig-date">${CAMP_NAME}<span class="sig-line"></span></div>
+        <div class="sig-block">
+          <span class="sig-name">${SIGNATORY_NAME}</span>
+          <span class="sig-line"></span>
+          <span class="sig-caption">課程負責人簽章</span>
+        </div>
+        <div class="sig-block sig-date">
+          <span class="sig-camp-name">${CAMP_NAME}</span>
+        </div>
       </div>
     </div>
   `;

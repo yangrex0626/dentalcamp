@@ -4,6 +4,7 @@
 
 const CAMP_NAME = "國防醫學大學 口腔醫學營";
 const COURSE_NAME = "思維挑戰";
+const SIGNATORY_NAME = "Yang Chen Hsin";
 const LOGO_SRC = "assets/dental-camp-logo.jpg";
 
 /* ---------- 證書印章（使用營隊官方 Logo） ---------- */
