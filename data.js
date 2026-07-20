@@ -6,6 +6,7 @@ const CAMP_NAME = "國防醫學大學 口腔醫學營";
 const COURSE_NAME = "思維挑戰";
 const SIGNATORY_NAME = "Yang Chen Hsin";
 const LOGO_SRC = "assets/dental-camp-logo.jpg";
+const FEEDBACK_EMAIL = "rexyang2005@gmail.com"; // 測試回饋預設寄送對象，需要的話直接改這裡
 
 /* ---------- 證書印章（使用營隊官方 Logo） ---------- */
 const CERT_SEAL_SVG = `<img class="cert-seal" src="${LOGO_SRC}" alt="${CAMP_NAME} Logo">`;

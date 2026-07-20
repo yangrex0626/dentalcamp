@@ -499,6 +499,7 @@ function renderEnd() {
       </div>
       ${buildCertificateHtml(elapsedStr, dateStr, true)}
       <div class="cert-btn-row"><button class="sos-btn" id="reset-game-btn">重置任務（下一隊使用）</button></div>
+      ${buildFeedbackHtml()}
     `;
   } else {
     els.endPanel.innerHTML = `
@@ -517,6 +518,7 @@ function renderEnd() {
       </div>
       ${buildCertificateHtml(elapsedStr, dateStr, false)}
       <div class="cert-btn-row"><button class="sos-btn" id="reset-game-btn">重置任務（下一隊使用）</button></div>
+      ${buildFeedbackHtml()}
     `;
   }
 
@@ -536,6 +538,82 @@ function renderEnd() {
       resetBtn.dataset.armed = "0";
       resetBtn.textContent = "重置任務（下一隊使用）";
     }, 4000);
+  });
+
+  wireFeedbackPanel();
+}
+
+/* ---------- 測試回饋（需測試者主動送出，不做背景追蹤） ---------- */
+function buildFeedbackHtml() {
+  return `
+    <div class="panel feedback-panel">
+      <div class="case-tag">測試回饋</div>
+      <p class="feedback-intro">如果這是測試場次，麻煩花 30 秒留下這些資訊，幫助我們抓出問題。
+      下面的內容完全由你決定要不要送出，我們不會在背景偷偷蒐集任何資料。</p>
+      <div class="feedback-summary" id="feedback-summary"></div>
+      <div class="input-group single" style="width:100%;">
+        <label>遇到的問題／建議（選填）</label>
+        <textarea id="feedback-notes" rows="4" placeholder="例如：在手機上證物⑤的圖表跑版、第③關提示看不懂……"></textarea>
+      </div>
+      <div class="cert-btn-row">
+        <button class="start-btn" id="copy-feedback-btn">複製回饋內容</button>
+        <button class="sos-btn" id="email-feedback-btn">用 Email 寄出回饋</button>
+      </div>
+      <div class="feedback-status" id="feedback-status"></div>
+    </div>
+  `;
+}
+
+function buildFeedbackSummaryText(notes) {
+  const solvedCount = state.solved.filter(Boolean).length;
+  const elapsedSec = Math.max(0, Math.round((state.finishTimestamp - state.startTimestamp) / 1000));
+  const now = new Date().toLocaleString("zh-TW");
+  const lines = [
+    "【臨床資料重建行動 測試回饋】",
+    `隊名／暱稱：${state.teamName}`,
+    `完成度：${solvedCount} / 9`,
+    `完成用時：${formatDuration(elapsedSec)}`,
+    `SOS 使用次數：${state.sosUsedTotal}`,
+    `瀏覽器：${navigator.userAgent}`,
+    `螢幕尺寸：${screen.width}x${screen.height}（可視區域 ${window.innerWidth}x${window.innerHeight}）`,
+    `語言設定：${navigator.language}`,
+    `送出時間：${now}`,
+  ];
+  if (notes && notes.trim()) {
+    lines.push("", "問題／建議：", notes.trim());
+  }
+  return lines.join("\n");
+}
+
+function wireFeedbackPanel() {
+  const summaryEl = document.getElementById("feedback-summary");
+  const notesEl = document.getElementById("feedback-notes");
+  const copyBtn = document.getElementById("copy-feedback-btn");
+  const emailBtn = document.getElementById("email-feedback-btn");
+  const statusEl = document.getElementById("feedback-status");
+  if (!summaryEl || !copyBtn || !emailBtn) return;
+
+  const refreshSummary = () => {
+    summaryEl.textContent = buildFeedbackSummaryText(notesEl.value);
+  };
+  refreshSummary();
+  notesEl.addEventListener("input", refreshSummary);
+
+  copyBtn.addEventListener("click", async () => {
+    const text = buildFeedbackSummaryText(notesEl.value);
+    try {
+      await navigator.clipboard.writeText(text);
+      statusEl.textContent = "已複製，貼給我們就可以了！";
+    } catch (e) {
+      statusEl.textContent = "複製失敗，請手動選取上面的文字複製。";
+    }
+  });
+
+  emailBtn.addEventListener("click", () => {
+    const text = buildFeedbackSummaryText(notesEl.value);
+    const subject = encodeURIComponent(`臨床資料重建行動 測試回饋 - ${state.teamName}`);
+    const body = encodeURIComponent(text);
+    window.location.href = `mailto:${FEEDBACK_EMAIL}?subject=${subject}&body=${body}`;
   });
 }
 
