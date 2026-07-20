@@ -587,16 +587,6 @@ details.knowledge .kbody li { margin-bottom: 4px; }
   color: var(--text);
   margin-bottom: 30px;
 }
-.disclosure-note {
-  font-size: 13px;
-  line-height: 1.8;
-  color: var(--accent-amber);
-  background: rgba(201,138,58,0.08);
-  border: 1px solid rgba(201,138,58,0.3);
-  border-radius: 5px;
-  padding: 10px 14px;
-  margin: -14px 0 30px;
-}
 .team-form {
   display: flex;
   gap: 12px;
@@ -682,50 +672,6 @@ details.knowledge .kbody li { margin-bottom: 4px; }
 }
 
 .cert-btn-row { display: flex; gap: 12px; justify-content: center; margin-top: 10px; flex-wrap: wrap; }
-
-/* ---------- 測試回饋 ---------- */
-.feedback-panel { margin-top: 30px; text-align: left; }
-.feedback-intro {
-  font-size: 13.5px;
-  color: var(--text-muted);
-  line-height: 1.8;
-  margin-bottom: 16px;
-}
-.feedback-summary {
-  font-family: var(--font-mono);
-  font-size: 12px;
-  line-height: 1.7;
-  white-space: pre-wrap;
-  color: var(--text-muted);
-  background: var(--bg-panel-2);
-  border: 1px solid var(--border-soft);
-  border-radius: 5px;
-  padding: 14px 16px;
-  margin-bottom: 16px;
-}
-.feedback-panel textarea {
-  font-family: var(--font-sans);
-  font-size: 14px;
-  background: var(--bg-panel-2);
-  border: 1px solid var(--border);
-  border-radius: 4px;
-  color: var(--text);
-  padding: 10px 12px;
-  width: 100%;
-  resize: vertical;
-}
-.feedback-panel textarea:focus {
-  outline: none;
-  border-color: var(--accent);
-  box-shadow: 0 0 0 2px rgba(47,143,124,0.25);
-}
-.feedback-status {
-  text-align: center;
-  font-size: 13px;
-  color: var(--accent-bright);
-  min-height: 18px;
-  margin-top: 10px;
-}
 
 /* ---------- 證書 ---------- */
 .certificate {
@@ -896,7 +842,7 @@ details.knowledge .kbody li { margin-bottom: 4px; }
 @media print {
   body { background: #fff; }
   .topbar, .progress-track, #screen-brief, #screen-game, .end-badge, .end-stats,
-  .report-panel, .cert-btn-row, .foot-note, h1.end-title-only, .feedback-panel { display: none !important; }
+  .report-panel, .cert-btn-row, .foot-note, h1.end-title-only { display: none !important; }
   #screen-end { display: block !important; }
   .certificate {
     display: block !important;

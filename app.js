@@ -64,10 +64,7 @@ function clearState() {
 /* ---------- 初始化 ---------- */
 function init() {
   initEmailJS();
-  els.briefingText.innerHTML = BRIEFING_TEXT
-    + (isEmailJSConfigured()
-      ? '<p class="disclosure-note">🔔 這是測試場次：完成或結束任務後，隊名與完成度會自動回報給主辦單位，協助抓出問題與調整活動。</p>'
-      : "");
+  els.briefingText.innerHTML = BRIEFING_TEXT;
   els.conventionsText.innerHTML = CONVENTIONS_TEXT;
 
   const restored = loadState();
@@ -504,7 +501,6 @@ function renderEnd() {
       </div>
       ${buildCertificateHtml(elapsedStr, dateStr, true)}
       <div class="cert-btn-row"><button class="sos-btn" id="reset-game-btn">重置任務（下一隊使用）</button></div>
-      ${buildFeedbackHtml()}
     `;
   } else {
     els.endPanel.innerHTML = `
@@ -523,7 +519,6 @@ function renderEnd() {
       </div>
       ${buildCertificateHtml(elapsedStr, dateStr, false)}
       <div class="cert-btn-row"><button class="sos-btn" id="reset-game-btn">重置任務（下一隊使用）</button></div>
-      ${buildFeedbackHtml()}
     `;
   }
 
@@ -545,7 +540,7 @@ function renderEnd() {
     }, 4000);
   });
 
-  wireFeedbackPanel();
+  autoReportIfNeeded();
 }
 
 /* ---------- 測試回饋 ---------- */
@@ -560,28 +555,6 @@ function initEmailJS() {
   if (isEmailJSConfigured()) {
     emailjs.init({ publicKey: EMAILJS_PUBLIC_KEY });
   }
-}
-
-function buildFeedbackHtml() {
-  const auto = isEmailJSConfigured();
-  return `
-    <div class="panel feedback-panel">
-      <div class="case-tag">測試回饋</div>
-      <p class="feedback-intro">${auto
-        ? "這是測試場次：完成或結束任務後，隊名與完成度會自動回報給主辦單位，協助抓出問題。想補充說明的話，可以在下面留言後再送一次。"
-        : "如果這是測試場次，麻煩花 30 秒留下這些資訊，幫助我們抓出問題。下面的內容完全由你決定要不要送出。"}</p>
-      <div class="feedback-summary" id="feedback-summary"></div>
-      <div class="input-group single" style="width:100%;">
-        <label>遇到的問題／建議（選填）</label>
-        <textarea id="feedback-notes" rows="4" placeholder="例如：在手機上證物⑤的圖表跑版、第③關提示看不懂……"></textarea>
-      </div>
-      <div class="cert-btn-row">
-        <button class="start-btn" id="copy-feedback-btn">複製回饋內容</button>
-        <button class="sos-btn" id="email-feedback-btn">${auto ? "送出留言" : "用 Email 寄出回饋"}</button>
-      </div>
-      <div class="feedback-status" id="feedback-status"></div>
-    </div>
-  `;
 }
 
 function buildFeedbackSummaryText(notes) {
@@ -605,70 +578,19 @@ function buildFeedbackSummaryText(notes) {
   return lines.join("\n");
 }
 
-function sendViaEmailJS(text, statusEl, pendingMsg, okMsg, failMsg) {
-  statusEl.textContent = pendingMsg;
-  return emailjs.send(EMAILJS_SERVICE_ID, EMAILJS_TEMPLATE_ID, {
+function autoReportIfNeeded() {
+  if (!isEmailJSConfigured()) return;
+  if (state.feedbackReported) return;
+  const text = buildFeedbackSummaryText("");
+  emailjs.send(EMAILJS_SERVICE_ID, EMAILJS_TEMPLATE_ID, {
     team_name: state.teamName,
     message: text,
   }).then(() => {
-    statusEl.textContent = okMsg;
-    return true;
+    state.feedbackReported = true;
+    saveState();
   }).catch(() => {
-    statusEl.textContent = failMsg;
-    return false;
+    // 靜默失敗，下次進到結局頁會再試一次（feedbackReported 沒被設為 true）
   });
-}
-
-function wireFeedbackPanel() {
-  const summaryEl = document.getElementById("feedback-summary");
-  const notesEl = document.getElementById("feedback-notes");
-  const copyBtn = document.getElementById("copy-feedback-btn");
-  const emailBtn = document.getElementById("email-feedback-btn");
-  const statusEl = document.getElementById("feedback-status");
-  if (!summaryEl || !copyBtn || !emailBtn) return;
-
-  const refreshSummary = () => {
-    summaryEl.textContent = buildFeedbackSummaryText(notesEl.value);
-  };
-  refreshSummary();
-  notesEl.addEventListener("input", refreshSummary);
-
-  copyBtn.addEventListener("click", async () => {
-    const text = buildFeedbackSummaryText(notesEl.value);
-    try {
-      await navigator.clipboard.writeText(text);
-      statusEl.textContent = "已複製，貼給我們就可以了！";
-    } catch (e) {
-      statusEl.textContent = "複製失敗，請手動選取上面的文字複製。";
-    }
-  });
-
-  if (isEmailJSConfigured()) {
-    emailBtn.addEventListener("click", () => {
-      const text = buildFeedbackSummaryText(notesEl.value);
-      sendViaEmailJS(text, statusEl, "送出中……", "留言已送出，謝謝！", "送出失敗，請改用複製按鈕貼給我們。");
-    });
-
-    if (!state.feedbackReported) {
-      const baseText = buildFeedbackSummaryText("");
-      sendViaEmailJS(baseText, statusEl, "正在自動回報測試結果……", "已自動回報，謝謝你的測試協助！", "自動回報失敗，請改用下面的按鈕手動送出。")
-        .then((ok) => {
-          if (ok) {
-            state.feedbackReported = true;
-            saveState();
-          }
-        });
-    } else {
-      statusEl.textContent = "這次任務的結果已經回報過了，補充留言可以再按一次「送出留言」。";
-    }
-  } else {
-    emailBtn.addEventListener("click", () => {
-      const text = buildFeedbackSummaryText(notesEl.value);
-      const subject = encodeURIComponent(`臨床資料重建行動 測試回饋 - ${state.teamName}`);
-      const body = encodeURIComponent(text);
-      window.location.href = `mailto:${FEEDBACK_EMAIL}?subject=${subject}&body=${body}`;
-    });
-  }
 }
 
 function buildCertificateHtml(elapsedStr, dateStr, success) {
