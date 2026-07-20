@@ -202,7 +202,7 @@ function renderStage() {
   ` : "";
 
   els.stagePanel.innerHTML = `
-    <div class="case-tag">證物 ${stage.code} / 9</div>
+    <div class="case-tag">證物 ${stage.code} / ${STAGES.length}</div>
     <h2 class="title-serif">${stage.code} ${stage.title}</h2>
     <div class="subject-line">${stage.subject}</div>
     <div class="stage-intro">${stage.intro}</div>
@@ -489,11 +489,11 @@ function renderEnd() {
     els.endPanel.innerHTML = `
       <div class="end-badge success">CASE CLOSED</div>
       <h1 class="end-title-only">結案：A19 病歷重建完成</h1>
-      <p style="color:var(--text-muted); font-size:14px;">隊伍「${escapeHtml(state.teamName)}」已完整重建九份證物。</p>
+      <p style="color:var(--text-muted); font-size:14px;">隊伍「${escapeHtml(state.teamName)}」已完整重建${STAGES.length}份證物。</p>
       <div class="end-stats">
         <div class="stat-box"><div class="num">${elapsedStr}</div><div class="lbl">完成用時</div></div>
         <div class="stat-box"><div class="num">${state.sosUsedTotal}</div><div class="lbl">SOS 使用次數</div></div>
-        <div class="stat-box"><div class="num">9 / 9</div><div class="lbl">證物完成度</div></div>
+        <div class="stat-box"><div class="num">${STAGES.length} / ${STAGES.length}</div><div class="lbl">證物完成度</div></div>
       </div>
       <div class="panel report-panel">${FINAL_REPORT_HTML}</div>
       <div class="cert-btn-row">
@@ -506,9 +506,9 @@ function renderEnd() {
     els.endPanel.innerHTML = `
       <div class="end-badge timeout">SESSION ENDED</div>
       <h1 class="end-title-only">任務提前結束</h1>
-      <p style="color:var(--text-muted); font-size:14px;">隊伍「${escapeHtml(state.teamName)}」完成了 ${solvedCount} / 9 份證物的重建（任務由工作人員手動結束）。</p>
+      <p style="color:var(--text-muted); font-size:14px;">隊伍「${escapeHtml(state.teamName)}」完成了 ${solvedCount} / ${STAGES.length} 份證物的重建（任務由工作人員手動結束）。</p>
       <div class="end-stats">
-        <div class="stat-box"><div class="num">${solvedCount} / 9</div><div class="lbl">證物完成度</div></div>
+        <div class="stat-box"><div class="num">${solvedCount} / ${STAGES.length}</div><div class="lbl">證物完成度</div></div>
         <div class="stat-box"><div class="num">${state.sosUsedTotal}</div><div class="lbl">SOS 使用次數</div></div>
       </div>
       <p style="color:var(--text-muted); font-size:14px; max-width:520px; margin:0 auto 20px;">
@@ -564,7 +564,7 @@ function buildFeedbackSummaryText(notes) {
   const lines = [
     "【臨床資料重建行動 測試回饋】",
     `隊名／暱稱：${state.teamName}`,
-    `完成度：${solvedCount} / 9`,
+    `完成度：${solvedCount} / ${STAGES.length}`,
     `完成用時：${formatDuration(elapsedSec)}`,
     `SOS 使用次數：${state.sosUsedTotal}`,
     `瀏覽器：${navigator.userAgent}`,
@@ -610,12 +610,12 @@ function buildCertificateHtml(elapsedStr, dateStr, success) {
       <div class="cert-team">${escapeHtml(state.teamName)}</div>
       <div class="cert-body">
         ${success
-          ? "已完整重建病患 A19 的九份臨床證物，成功產出診斷報告，展現嚴謹的臨床推理能力，特此證明。"
+          ? `已完整重建病患 A19 的${STAGES.length}份臨床證物，成功產出診斷報告，展現嚴謹的臨床推理能力，特此證明。`
           : "已參與病患 A19 病歷重建任務，並完成部分證物重建，特此證明。"}
       </div>
       <div class="cert-meta">
         <div><strong>${elapsedStr}</strong>${success ? "完成用時" : "任務時長"}</div>
-        <div><strong>${state.solved.filter(Boolean).length} / 9</strong>證物完成度</div>
+        <div><strong>${state.solved.filter(Boolean).length} / ${STAGES.length}</strong>證物完成度</div>
         <div><strong>${dateStr}</strong>日期</div>
       </div>
 

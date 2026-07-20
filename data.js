@@ -26,20 +26,20 @@ const CERT_SEAL_SVG = `<img class="cert-seal" src="${LOGO_SRC}" alt="${CAMP_NAME
 const BRIEFING_TEXT = `
 你是教學醫院口腔顎面部門新成立的「臨床資料重建小組」成員。<br><br>
 三天前，醫院病歷系統發生資料損毀，一名代號 <strong>A19</strong> 的高三病患，其完整病歷幾乎全部遺失，
-只搶救出九份分散、格式混亂的原始記錄與檢驗數據，橫跨從嬰幼兒發育、牙齒型態、組織構造、解剖位置，
+只搶救出十份分散、格式混亂的原始記錄與檢驗數據，橫跨從嬰幼兒發育、牙齒型態、組織構造、解剖位置，
 到蛀牙成因、牙周狀況、飲食風險、修復材料選擇，以及一次外傷處置記錄。這名病患在半年內，口腔狀況急速惡化。<br><br>
 院方委託你們小組，重建出完整的診斷報告，藉此釐清 A19 口腔狀況急速惡化的真正原因。這是一項思維挑戰，不求快，只求每一步推理都經得起檢驗。<br><br>
 每重建出一份證物的關鍵代碼，請在下方對應欄位輸入驗證。驗證成功後，系統會釋出下一段劇情與下一份證物。
 `;
 
 const CONVENTIONS_TEXT = `
-<p>資料重建系統殘留了一份操作慣例說明，接下來九份證物都會用到，先讀懂它：</p>
+<p>資料重建系統殘留了一份操作慣例說明，接下來十份證物都會用到，先讀懂它：</p>
 <ul>
   <li>凡是牽涉「英文名稱」的線索，通常要取該英文單字的<strong>第一個字母</strong>，換算成它在 26 個字母表中的<strong>序位</strong>（A=1, B=2 … Z=26）。例如英文單字是 Apple，取第一個字母 A，序位為 1。</li>
   <li>找到多個數字時，系統預設會將它們<strong>加總</strong>成一個驗證碼，除非證物內容另有指示（例如排序、串接）。</li>
   <li>每份證物的輸入框數量，就是這份證物需要你找出的數字個數——不會多也不會少。</li>
 </ul>
-<p>接下來的九份證物，只會給你原始資料和背景知識，不會再重複說明怎麼算——請自己判斷該套用哪一條慣例。</p>
+<p>接下來的十份證物，只會給你原始資料和背景知識，不會再重複說明怎麼算——請自己判斷該套用哪一條慣例。</p>
 `;
 
 /* ---------- Stephan 曲線資料模型（用於證物⑤即時繪圖） ---------- */
@@ -75,8 +75,49 @@ function stephanEnvelopeAt(t) {
   return minVal === Infinity ? 7.0 : minVal;
 }
 
+/* ---------- 根尖片示意圖（用於證物⑩） ---------- */
+const RADIOGRAPHS = [
+  { label: "A", cejMm: 1, lesion: false },
+  { label: "B", cejMm: 1, lesion: true },
+  { label: "C", cejMm: 4, lesion: false },
+  { label: "D", cejMm: 4, lesion: true }
+];
+
+function buildRadiographSVG(r) {
+  const crownTop = 20, cej = 65, tipY = 168;
+  const crestY = cej + r.cejMm * 9;
+  let svg = `<svg viewBox="0 0 140 210" xmlns="http://www.w3.org/2000/svg">`;
+  svg += `<rect x="0" y="0" width="140" height="210" fill="#1a1a1a"/>`;
+  svg += `<rect x="10" y="${crestY}" width="120" height="${210 - crestY}" fill="#5c5648" opacity="0.55"/>`;
+  for (let ty = crestY + 12; ty < 200; ty += 14) {
+    svg += `<line x1="12" y1="${ty}" x2="128" y2="${ty + 4}" stroke="#726b58" stroke-width="1" opacity="0.4"/>`;
+  }
+  svg += `<path d="M52,${cej} L88,${cej} L74,${tipY} L66,${tipY} Z" fill="#d9d4c4"/>`;
+  svg += `<rect x="48" y="${crownTop}" width="44" height="${cej - crownTop}" rx="8" fill="#eae6d8"/>`;
+  if (r.lesion) {
+    svg += `<ellipse cx="70" cy="${tipY - 6}" rx="17" ry="13" fill="#1a1a1a" opacity="0.92"/>`;
+  }
+  svg += `<line x1="30" y1="${cej}" x2="110" y2="${cej}" stroke="#8ec9bb" stroke-width="1" stroke-dasharray="3,2"/>`;
+  svg += `<text x="112" y="${cej + 3}" fill="#8ec9bb" font-size="8" font-family="monospace">CEJ</text>`;
+  svg += `<line x1="14" y1="${crestY}" x2="126" y2="${crestY}" stroke="#e8c05c" stroke-width="1.2" stroke-dasharray="4,2"/>`;
+  svg += `<text x="70" y="14" fill="#e6edf3" font-size="13" font-family="serif" text-anchor="middle" font-weight="700">${r.label}</text>`;
+  svg += `</svg>`;
+  return svg;
+}
+
+const RADIOGRAPH_PANELS_HTML = `
+  <div class="radiograph-grid">
+    ${RADIOGRAPHS.map((r) => `
+      <div class="radiograph-panel">
+        ${buildRadiographSVG(r)}
+        <div class="radiograph-caption">CEJ–齒槽骨嵴：${r.cejMm} mm</div>
+      </div>
+    `).join("")}
+  </div>
+`;
+
 /* ============================================================
-   九關資料
+   十關資料
    ============================================================ */
 const STAGES = [
   {
@@ -232,6 +273,14 @@ const STAGES = [
       </ul>
       <p>以上五種才是公認的「牙齒相關組織」。<strong>齒槽骨（Alveolar bone）</strong>雖然礦物質含量也不低，但它屬於顎骨系統的一部分，
       並不算牙齒本身或牙周的組織——切片檢體在採樣過程中，有時會不小心混入周邊齒槽骨的碎屑，判讀時需要特別留意排除。</p>
+      <div class="tissue-legend">
+        <div class="tissue-chip hard">琺瑯質<span class="tissue-en">Enamel</span></div>
+        <div class="tissue-chip hard">牙本質<span class="tissue-en">Dentin</span></div>
+        <div class="tissue-chip soft">牙髓<span class="tissue-en">Pulp</span></div>
+        <div class="tissue-chip hard">牙骨質<span class="tissue-en">Cementum</span></div>
+        <div class="tissue-chip soft">牙周韌帶<span class="tissue-en">PDL</span></div>
+      </div>
+      <div class="tissue-legend-key"><span class="key-hard">■ 硬組織</span><span class="key-soft">■ 軟組織</span></div>
     `,
     task: `
       <table class="data-table">
@@ -253,7 +302,6 @@ const STAGES = [
       <p class="cipher-example">範例：若金鑰是 [1, 2, 3]，要解密的密文是 <strong>DCW</strong>，解密時要把每個字母往「前」移動對應格數：
       D 往前移 1 格回到 C，C 往前移 2 格回到 A，W 往前移 3 格回到 T，解密後得到明文 <strong>CAT</strong>。加密時則反過來，往後移動對應格數。</p>
       <div class="cipher-block">UIAGR TPI JKKMV JTWV</div>
-      <p>解密後的訊息會用英文單字拼出一組四位數密碼（例如解密結果是 "THREE NINE ZERO SIX"，代表密碼是 3906）。</p>
     `,
     format: "single",
     inputLabels: ["解密出的四位數密碼"],
@@ -411,6 +459,15 @@ const STAGES = [
       <p>牙齒琺瑯質開始脫礦的臨界 pH 約為 <strong>5.5</strong>。飲料或食物的酸鹼度可以用其中的氫離子濃度 [H⁺] 換算：</p>
       <p class="formula">pH = −log₁₀[H⁺]</p>
       <p>例如某飲品的 [H⁺] 為 10⁻².⁵ mol/L，代入公式後 pH 約為 2.5，屬於高風險（強酸）飲品。</p>
+      <div class="ph-scale">
+        <div class="ph-bar"></div>
+        <div class="ph-critical-marker" style="left:${(5.5/14*100).toFixed(1)}%">
+          <span class="ph-critical-label">5.5<br>臨界值</span>
+        </div>
+        <div class="ph-scale-labels">
+          <span>0（強酸）</span><span>7（中性）</span><span>14（強鹼）</span>
+        </div>
+      </div>
     `,
     task: `
       <table class="data-table">
@@ -492,36 +549,40 @@ const STAGES = [
     background: `
       <p>牙齒外傷的正確處理原則，會因「牙齒種類」與「離開口腔的時間」而有不同：</p>
       <ul>
+        <li>乳牙通常在 6–12 歲之間逐漸換為恆牙，<strong>13 歲以上的青少年，口腔中原則上已無乳牙殘留</strong>。</li>
         <li>只有<strong>恆牙</strong>適合執行「再植」（Replantation），乳牙脫落不進行再植。</li>
         <li>牙根表面的<strong>牙周韌帶細胞（Periodontal ligament, PDL）</strong>是否存活，是再植成功與否的關鍵；離體時間越短、保存介質越適當，成功率越高。</li>
         <li>保存介質優先順序：<strong>Hank's 平衡鹽溶液 &gt; 冷牛奶 &gt; 病人自己的唾液（含在口腔內）&gt; 生理食鹽水</strong>；
         <strong>絕對不可用自來水</strong>（低張溶液會使牙周韌帶細胞脹破死亡），也不建議用運動飲料（滲透壓與含糖量不利細胞存活）。</li>
         <li>離體乾燥時間若超過 <strong>60 分鐘（黃金時間）</strong>，牙周韌帶細胞大量壞死，再植成功率會大幅下降。</li>
         <li>牙根表面若有明顯髒污，只能用生理食鹽水輕輕沖洗，<strong>絕不可刷洗或用紙巾用力擦拭</strong>牙根表面。</li>
+        <li>再植固定後，通常需以牙周固定線（splint）將患牙固定約 1–2 週，期間應<strong>避免用患側咬硬物</strong>，並依醫囑<strong>定期回診</strong>移除固定、追蹤牙髓與牙周狀況；固定完成不代表處置結束。</li>
       </ul>
     `,
     task: `
-      <p class="scenario">半年前，15 歲的 A19 在籃球比賽中被隊友手肘撞到，<strong>上顎右側正中門牙（恆牙）</strong>整顆脫出並掉落在地上。
-      隊友撿起牙齒時，已經過了約 <strong>10 分鐘</strong>。現場能取得的液體只有：運動飲料、冰牛奶、生理食鹽水、自來水。</p>
-      <p>依照下方五個節點，逐一做出臨床判斷。每個節點只有一個做法符合正確的外傷處置原則——選對才會往下走並拿到一位數字，選錯系統只會告訴你這麼做的後果，不會直接告訴你正確答案。五個節點都走完後，系統會自動組成驗證碼。</p>
+      <p class="scenario">半年前，15 歲的 A19 在籃球比賽中被隊友手肘撞到，<strong>上顎右側正中門牙</strong>整顆脫出並掉落在地上。
+      受傷時間是 <strong>15:42</strong>，隊友直到 <strong>15:53</strong> 才注意到地上的牙齒並撿起。現場能取得的液體只有：運動飲料、冰牛奶、生理食鹽水、自來水。</p>
+      <p>依照下方六個節點，逐一做出臨床判斷。每個節點只有一個做法符合正確的外傷處置原則——選對才會往下走並拿到一位數字，選錯系統只會告訴你這麼做的後果，不會直接告訴你正確答案。六個節點都走完後，系統會自動組成驗證碼。</p>
       <div id="decision-tree-mount"></div>
     `,
     format: "single",
     inputLabels: ["驗證碼（由決策樹自動組成）"],
-    answer: ["73260"],
+    answer: ["732605"],
     decisionNodes: [
       {
-        prompt: "節點一：這顆脫出的牙齒，適合執行「再植」處置嗎？",
+        prompt: "節點一：這顆脫出的正中門牙，最可能是乳牙還是恆牙？",
         options: [
-          { label: "是恆牙，適合再植", correct: true, digit: "7" },
-          { label: "不論恆牙乳牙都先試著再植看看", correct: false, feedback: "乳牙脫落並不執行再植，先確認牙齒種類再決定是否往下處理。" }
+          { label: "A19 已經 15 歲，這個年紀原則上已無乳牙殘留，應該是恆牙，適合評估再植", correct: true, digit: "7" },
+          { label: "無法確定是乳牙還是恆牙，因此不建議進行任何處置", correct: false, feedback: "年齡是很好的判斷依據，不需要因為現場無法直接檢驗就放棄判斷。" },
+          { label: "不論是恆牙或乳牙，脫出的牙齒都應該立刻嘗試再植", correct: false, feedback: "乳牙脫落並不執行再植，牙齒種類會直接影響是否適合再植，需要先判斷清楚。" }
         ]
       },
       {
-        prompt: "節點二：牙齒已離開口腔約 10 分鐘，這代表什麼？",
+        prompt: "節點二：從 15:42 受傷到 15:53 被撿起，中間經過了幾分鐘？這段時間是否還在黃金時間內？",
         options: [
-          { label: "還在黃金時間內，值得積極搶救", correct: true, digit: "3" },
-          { label: "已經超過黃金時間，搶救意義不大", correct: false, feedback: "再想想牙周韌帶細胞能撐多久——10 分鐘和那個時限比起來，差距其實很大。" }
+          { label: "經過了 9 分鐘，還在黃金時間內", correct: false, feedback: "重新算一次：15:53 減 15:42，注意分鐘部分不需要跨小時借位。" },
+          { label: "經過了 11 分鐘，還在黃金時間內", correct: true, digit: "3" },
+          { label: "經過了 21 分鐘，已經超過黃金時間", correct: false, feedback: "時間算得太多了，再檢查一次兩個時間點的分鐘數。" }
         ]
       },
       {
@@ -546,16 +607,57 @@ const STAGES = [
           { label: "先用清水幫病患漱口消毒，再前往醫院", correct: false, feedback: "不需要額外處理，只會浪費黃金時間，應該把握時間直接送醫。" },
           { label: "立刻送醫，由牙醫師執行再植與固定（splinting）", correct: true, digit: "0" }
         ]
+      },
+      {
+        prompt: "節點六：再植固定完成後，接下來幾週最重要的照護原則是？",
+        options: [
+          { label: "固定完就沒事了，之後不需要再回診", correct: false, feedback: "再植的牙齒仍有牙髓壞死、牙根吸收等風險，需要定期回診追蹤，固定完成不代表處置結束。" },
+          { label: "固定期間避免用患側咬硬物，並依醫囑回診移除固定、追蹤牙髓與牙周狀況", correct: true, digit: "5" },
+          { label: "固定後應盡快恢復正常咀嚼，越早習慣使用越好", correct: false, feedback: "固定期間患牙尚未穩定，用力咬合可能讓再植失敗，應該避免患側咬硬物。" }
+        ]
       }
     ],
     hints: [
-      "先確認：乳牙不做再植，這顆是恆牙嗎？",
-      "10 分鐘有沒有超過黃金 60 分鐘？",
+      "A19 現在 15 歲，一般這個年紀乳牙應該都已經換完了，這顆脫出的正中門牙最可能是恆牙。",
+      "15:53 減 15:42，分鐘部分直接相減即可，不需要跨小時借位——經過的時間有沒有超過黃金 60 分鐘？",
       "牙根不能刷洗、不能用紙巾擦，只能輕輕沖生理食鹽水。",
-      "保存介質的優先順序：Hank's液 > 冷牛奶 > 唾液 > 生理食鹽水，絕對不能用自來水或運動飲料。"
+      "保存介質的優先順序：Hank's液 > 冷牛奶 > 唾液 > 生理食鹽水，絕對不能用自來水或運動飲料。",
+      "固定完成後還沒結束，接下來幾週要避免用患側咬硬物，並依醫囑回診追蹤。"
     ],
     story: `
-      九份證物，全數重建完成。臨床資料重建小組的任務即將進入結案階段——完整診斷報告正在生成。
+      九份證物已重建完成，但系統提示還有最後一份殘留檔案尚未讀取——一份影像判讀報告，似乎與這次外傷的長期追蹤有關。<br>
+      下一份、也是最後一份證物正在解鎖：<strong>影像判讀</strong>。
+    `
+  },
+  {
+    id: 10,
+    code: "⑩",
+    title: "影像判讀",
+    subject: "口腔顎面放射線學",
+    intro: "最後一份資料，是 A19 回診時拍攝的根尖片，但檔案裡混入了幾張對照片，需要判斷哪一張才符合 A19 正中門牙目前最可能出現的狀況。",
+    background: `
+      <p>根尖片（Periapical radiograph, PA）是牙科最常用的 X 光攝影，能顯示牙齒、牙根及周圍齒槽骨的狀況。判讀時要注意兩個重點：</p>
+      <ul>
+        <li>根尖區域（root apex）周圍若出現邊界清楚的<strong>黑色透光區（radiolucency）</strong>，稱為根尖病灶，通常代表牙髓已經壞死、發炎反應正在侵蝕周圍齒槽骨——這類病灶常見於外傷或深齲齒導致的牙髓壞死，通常只侷限在單一顆牙。</li>
+        <li>牙頸部（CEJ, cementoenamel junction）到齒槽骨嵴（alveolar crest）的垂直距離，正常應<strong>小於 2mm</strong>；若達到<strong>3mm（含）以上</strong>，代表已出現齒槽骨吸收——這是牙周炎在X光上的典型表現，通常廣泛影響整口牙，而不是單一根尖的局部病灶。</li>
+      </ul>
+    `,
+    task: `
+      ${RADIOGRAPH_PANELS_HTML}
+      <p>A19 半年前因外傷再植了上顎正中門牙，牙髓有可能因為當時的創傷而壞死；至於證物⑥中被判定為牙周炎的兩顆臼齒，問題出在齒槽骨的廣泛流失，而不是單一根尖的病灶——兩者屬於不同機轉，X光表現也不同。</p>
+      <p>四張根尖片（A–D）中，哪一張最符合「正中門牙外傷後牙髓壞死、但尚未合併廣泛齒槽骨流失」的影像表現？找出正確的代號，換算成字母序位，作為第一個驗證碼；該張影像標示的 CEJ–齒槽骨嵴距離（mm），則是第二個驗證碼。</p>
+    `,
+    format: "pair",
+    inputLabels: ["驗證碼（一）", "驗證碼（二）"],
+    answer: ["2", "1"],
+    hints: [
+      "先想清楚：正中門牙的問題應該是「根尖病灶」還是「廣泛齒槽骨流失」？兩顆臼齒的問題又是哪一種？",
+      "符合正中門牙情況的影像，應該有根尖病灶，但 CEJ–齒槽骨嵴距離要落在正常範圍（小於 2mm）。",
+      "四張影像裡，只有一張同時符合「有根尖病灶」又「骨嵴距離正常」，找到它的代號，換算成字母序位，就是第一個驗證碼；圖片標示的 mm 數字就是第二個驗證碼。"
+    ],
+    story: `
+      影像判讀完成，診斷報告的最後一塊拼圖到位：正中門牙的根尖病灶證實了外傷後牙髓壞死，與兩顆臼齒的齒槽骨流失屬於兩種不同機轉，各自需要不同的治療計畫。<br>
+      十份證物，全數重建完成。臨床資料重建小組的任務正式進入結案階段——完整診斷報告正在生成。
     `
   }
 ];
@@ -563,13 +665,14 @@ const STAGES = [
 /* ---------- 結案診斷報告 ---------- */
 const FINAL_REPORT_HTML = `
   <p><strong>診斷重建摘要 — 病患代號 A19</strong></p>
-  <p>綜合九份重建證物，A19 口腔狀況於半年內急速惡化的成因，並非單一事件，而是<strong>多重因子疊加</strong>的結果：</p>
+  <p>綜合十份重建證物，A19 口腔狀況於半年內急速惡化的成因，並非單一事件，而是<strong>多重因子疊加</strong>的結果：</p>
   <ol>
     <li><strong>外傷史（半年前）</strong>：上顎右側正中門牙因運動撞擊完全脫出，雖於黃金時間內以冰牛奶保存並完成再植固定，但牙根與牙周組織已受到一次性創傷，修復能力下降，成為後續惡化的起點。</li>
     <li><strong>飲食頻率過高</strong>：Stephan 曲線顯示，A19 習慣少量多餐、頻繁攝取含糖與酸性飲品，三段脫礦期首尾相連，牙齒幾乎沒有機會完整再礦化，導致琺瑯質與牙本質持續脫礦。</li>
     <li><strong>高風險飲品攝取</strong>：飲食日記證實可樂、運動飲料、柳橙汁、黑咖啡為其日常飲品，皆屬 pH 低於臨界值的高風險品項，加劇酸襲擊強度。</li>
     <li><strong>牙周組織不可逆破壞</strong>：探測診斷顯示兩顆臼齒已出現附連組織喪失，證實發炎已從可逆的齦炎階段，進展為不可逆的牙周炎。</li>
     <li><strong>咬合功能代償</strong>：解剖定位顯示 TMJ 與咀嚼肌長期負擔異常，可能與患處牙齒疼痛迴避咬合、咬合力分布不均有關。</li>
+    <li><strong>影像證據分流</strong>：根尖片顯示正中門牙出現外傷後牙髓壞死的根尖病灶，與兩顆臼齒廣泛性齒槽骨流失屬於不同機轉，兩者需要分開擬定治療計畫。</li>
   </ol>
   <p><strong>結論</strong>：A19 的口腔惡化是「一次外傷 × 高頻率高風險飲食 × 潔牙習慣不足」共同作用的結果。
   單一治療（如僅修復蛀牙）無法根本解決問題，需同時介入飲食衛教、牙周治療與定期咬合追蹤。</p>
