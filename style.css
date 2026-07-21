@@ -1067,7 +1067,9 @@ details.knowledge .kbody li { margin-bottom: 4px; }
   }
   #end-panel::before { display: none !important; }
   .certificate {
-    display: table !important;
+    display: flex !important;
+    flex-direction: column;
+    justify-content: center;
     box-shadow: none !important;
     position: fixed;
     inset: 0;
@@ -1083,7 +1085,7 @@ details.knowledge .kbody li { margin-bottom: 4px; }
     page-break-after: avoid;
   }
   .certificate::before { inset: 18px; }
-  .cert-content { display: table-cell; vertical-align: middle; }
+  .cert-content { width: 100%; }
 
   /* 內容放大填滿整張紙，避免大片留白 */
   .cert-seal { width: 150px; height: 150px; margin-bottom: 16px; }
