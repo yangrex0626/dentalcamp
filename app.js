@@ -599,34 +599,36 @@ function buildCertificateHtml(elapsedStr, dateStr, success) {
       <div class="cert-corner tl"></div><div class="cert-corner tr"></div>
       <div class="cert-corner bl"></div><div class="cert-corner br"></div>
 
-      ${CERT_SEAL_SVG}
-      <div class="cert-course-badge">${COURSE_NAME}</div>
-      <div class="cert-course-en">CRITICAL THINKING CHALLENGE</div>
-      <div class="cert-activity-name">臨床資料重建行動</div>
+      <div class="cert-content">
+        ${CERT_SEAL_SVG}
+        <div class="cert-course-badge">${COURSE_NAME}</div>
+        <div class="cert-course-en">CRITICAL THINKING CHALLENGE</div>
+        <div class="cert-activity-name">臨床資料重建行動</div>
 
-      <div class="cert-title">${success ? "結案證明" : "任務參與證明"}</div>
+        <div class="cert-title">${success ? "結案證明" : "任務參與證明"}</div>
 
-      <div class="cert-team-label">茲證明</div>
-      <div class="cert-team">${escapeHtml(state.teamName)}</div>
-      <div class="cert-body">
-        ${success
-          ? `已完整重建病患 A19 的${STAGES.length}份臨床證物，成功產出診斷報告，展現嚴謹的臨床推理能力，特此證明。`
-          : "已參與病患 A19 病歷重建任務，並完成部分證物重建，特此證明。"}
-      </div>
-      <div class="cert-meta">
-        <div><strong>${elapsedStr}</strong>${success ? "完成用時" : "任務時長"}</div>
-        <div><strong>${state.solved.filter(Boolean).length} / ${STAGES.length}</strong>證物完成度</div>
-        <div><strong>${dateStr}</strong>日期</div>
-      </div>
-
-      <div class="cert-signoff">
-        <div class="sig-block">
-          <span class="sig-name">${SIGNATORY_NAME}</span>
-          <span class="sig-line"></span>
-          <span class="sig-caption">課程負責人簽章</span>
+        <div class="cert-team-label">茲證明</div>
+        <div class="cert-team">${escapeHtml(state.teamName)}</div>
+        <div class="cert-body">
+          ${success
+            ? `已完整重建病患 A19 的${STAGES.length}份臨床證物，成功產出診斷報告，展現嚴謹的臨床推理能力，特此證明。`
+            : "已參與病患 A19 病歷重建任務，並完成部分證物重建，特此證明。"}
         </div>
-        <div class="sig-block sig-date">
-          <span class="sig-camp-name">${CAMP_NAME}</span>
+        <div class="cert-meta">
+          <div><strong>${elapsedStr}</strong>${success ? "完成用時" : "任務時長"}</div>
+          <div><strong>${state.solved.filter(Boolean).length} / ${STAGES.length}</strong>證物完成度</div>
+          <div><strong>${dateStr}</strong>日期</div>
+        </div>
+
+        <div class="cert-signoff">
+          <div class="sig-block">
+            <span class="sig-name">${SIGNATORY_NAME}</span>
+            <span class="sig-line"></span>
+            <span class="sig-caption">課程負責人簽章</span>
+          </div>
+          <div class="sig-block sig-date">
+            <span class="sig-camp-name">${CAMP_NAME}</span>
+          </div>
         </div>
       </div>
     </div>

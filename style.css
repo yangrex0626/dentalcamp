@@ -1067,9 +1067,7 @@ details.knowledge .kbody li { margin-bottom: 4px; }
   }
   #end-panel::before { display: none !important; }
   .certificate {
-    display: flex !important;
-    flex-direction: column;
-    justify-content: center;
+    display: table !important;
     box-shadow: none !important;
     position: fixed;
     inset: 0;
@@ -1077,13 +1075,34 @@ details.knowledge .kbody li { margin-bottom: 4px; }
     width: auto;
     height: auto;
     max-width: none;
+    padding: 60px 70px;
     border-radius: 0;
     border-width: 0;
     box-sizing: border-box;
     page-break-inside: avoid;
     page-break-after: avoid;
   }
-  .certificate::before { inset: 14px; }
+  .certificate::before { inset: 18px; }
+  .cert-content { display: table-cell; vertical-align: middle; }
+
+  /* 內容放大填滿整張紙，避免大片留白 */
+  .cert-seal { width: 150px; height: 150px; margin-bottom: 16px; }
+  .cert-course-badge { font-size: 15px; margin: 6px 0 4px; }
+  .cert-course-en { font-size: 12px; margin-bottom: 26px; }
+  .cert-activity-name { font-size: 16px; margin-bottom: 10px; }
+  .cert-title { font-size: 42px; margin: 10px 0 32px; padding-bottom: 18px; }
+  .cert-title::after { width: 84px; height: 3px; }
+  .cert-team-label { font-size: 15px; margin-bottom: 10px; }
+  .cert-team { font-size: 48px; margin: 0 0 16px; padding-bottom: 16px; min-width: 380px; }
+  .cert-body { font-size: 18px; line-height: 2; margin: 28px auto; max-width: 640px; }
+  .cert-meta { gap: 70px; margin-top: 36px; font-size: 16px; }
+  .cert-meta strong { font-size: 20px; }
+  .cert-signoff { margin-top: 70px; padding-top: 24px; max-width: 700px; margin-left: auto; margin-right: auto; }
+  .cert-signoff .sig-block { font-size: 14px; }
+  .cert-signoff .sig-name { font-size: 44px; }
+  .cert-signoff .sig-line { width: 200px; height: 26px; }
+  .cert-signoff .sig-camp-name { font-size: 18px; }
+
   #app { max-width: 100%; padding: 0; margin: 0; }
 }
 
