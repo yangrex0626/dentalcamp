@@ -1053,20 +1053,17 @@ details.knowledge .kbody li { margin-bottom: 4px; }
 .staff-link-btn:hover { color: var(--accent-amber); }
 
 /* ---------- 列印（滿版，無白邊） ---------- */
-@page { margin: 0; }
+@page { margin: 0; size: auto; }
 @media print {
-  html, body { background: #fff; margin: 0; padding: 0; height: 100%; }
+  html, body { background: #fff; margin: 0; padding: 0; height: auto; overflow: visible; }
   .topbar, .progress-track, #screen-brief, #screen-game, .end-badge, .end-stats,
   .report-panel, .cert-btn-row, .foot-note, h1.end-title-only,
   .end-summary-text { display: none !important; }
-  #screen-end { display: block !important; margin: 0; padding: 0; }
+  #app, #screen-end, #end-panel { display: block !important; margin: 0 !important; padding: 0 !important; height: 0 !important; overflow: visible !important; }
   #end-panel {
-    padding: 0 !important;
-    margin: 0 !important;
     border: none !important;
     background: none !important;
     box-shadow: none !important;
-    overflow: visible !important;
   }
   #end-panel::before { display: none !important; }
   .certificate {
@@ -1074,13 +1071,17 @@ details.knowledge .kbody li { margin-bottom: 4px; }
     flex-direction: column;
     justify-content: center;
     box-shadow: none !important;
+    position: fixed;
+    inset: 0;
     margin: 0;
-    width: 100vw;
-    height: 100vh;
+    width: auto;
+    height: auto;
     max-width: none;
     border-radius: 0;
     border-width: 0;
     box-sizing: border-box;
+    page-break-inside: avoid;
+    page-break-after: avoid;
   }
   .certificate::before { inset: 14px; }
   #app { max-width: 100%; padding: 0; margin: 0; }
