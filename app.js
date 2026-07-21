@@ -637,41 +637,51 @@ function buildCertificateHtml(elapsedStr, dateStr, success) {
 
 /* ---------- 證書 PDF 下載（前端直接產生，避開各家瀏覽器「列印」的排版差異） ---------- */
 async function downloadCertificatePdf(triggerBtn) {
-  const certEl = document.querySelector(".certificate");
-  if (!certEl || !window.html2canvas || !window.jspdf) return;
+  const liveCert = document.querySelector(".certificate");
+  if (!liveCert || !window.html2canvas || !window.jspdf) return;
 
   const originalLabel = triggerBtn.textContent;
   triggerBtn.disabled = true;
   triggerBtn.textContent = "產生 PDF 中，請稍候…";
 
+  // 不論裝置螢幕多窄，都用固定的寬版尺寸重新畫一份證書來截圖，
+  // 這樣手機下載的 PDF 才會跟電腦上看到的比例一致，不會變成又窄又長的一條。
+  const offscreen = document.createElement("div");
+  offscreen.style.cssText = "position:fixed; left:-9999px; top:0; width:700px; pointer-events:none;";
+  const clone = liveCert.cloneNode(true);
+  clone.style.width = "700px";
+  clone.style.maxWidth = "none";
+  clone.style.margin = "0";
+  offscreen.appendChild(clone);
+  document.body.appendChild(offscreen);
+
   try {
     if (document.fonts && document.fonts.ready) {
       await document.fonts.ready;
     }
-    const canvas = await window.html2canvas(certEl, {
-      scale: 3,
+    await new Promise((resolve) => requestAnimationFrame(() => requestAnimationFrame(resolve)));
+
+    const canvas = await window.html2canvas(clone, {
+      scale: 2,
       backgroundColor: "#f9f3e4",
       useCORS: true,
     });
     const imgData = canvas.toDataURL("image/jpeg", 0.95);
 
+    // PDF 頁面大小直接跟著證書本身的比例走（不用 A4），下載出來就是證書原本的樣子，沒有多餘留白。
+    const margin = 8;
+    const imgW = 190;
+    const imgH = imgW * (canvas.height / canvas.width);
+    const pageW = imgW + margin * 2;
+    const pageH = imgH + margin * 2;
+
     const { jsPDF } = window.jspdf;
-    const doc = new jsPDF({ orientation: "portrait", unit: "mm", format: "a4" });
-    const pageW = doc.internal.pageSize.getWidth();
-    const pageH = doc.internal.pageSize.getHeight();
-    const margin = 10;
-    const maxW = pageW - margin * 2;
-    const maxH = pageH - margin * 2;
-    const ratio = canvas.width / canvas.height;
-    let drawW = maxW;
-    let drawH = drawW / ratio;
-    if (drawH > maxH) {
-      drawH = maxH;
-      drawW = drawH * ratio;
-    }
-    const x = (pageW - drawW) / 2;
-    const y = (pageH - drawH) / 2;
-    doc.addImage(imgData, "JPEG", x, y, drawW, drawH);
+    const doc = new jsPDF({
+      orientation: pageH >= pageW ? "portrait" : "landscape",
+      unit: "mm",
+      format: [pageW, pageH],
+    });
+    doc.addImage(imgData, "JPEG", margin, margin, imgW, imgH);
 
     const safeTeamName = String(state.teamName).replace(/[\\/:*?"<>|]/g, "_") || "隊伍";
     doc.save(`臨床資料重建行動證書_${safeTeamName}.pdf`);
@@ -679,6 +689,7 @@ async function downloadCertificatePdf(triggerBtn) {
     console.error(err);
     alert("PDF 產生失敗，請稍後再試一次。");
   } finally {
+    document.body.removeChild(offscreen);
     triggerBtn.disabled = false;
     triggerBtn.textContent = originalLabel;
   }
