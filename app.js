@@ -284,8 +284,10 @@ function normalizeAns(v) {
 
 /* ---------- 過關劇情 ---------- */
 function showStoryOverlay(stage) {
+  const isLastStage = state.currentStage === STAGES.length - 1;
   els.storyTitle.textContent = `證物 ${stage.code} 驗證通過`;
   els.storyText.innerHTML = stage.story;
+  els.storyNextBtn.textContent = isLastStage ? "完成調查" : "繼續調查";
   els.storyOverlay.classList.remove("hidden");
 
   const onNext = () => {
