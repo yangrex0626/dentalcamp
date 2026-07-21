@@ -1059,19 +1059,15 @@ details.knowledge .kbody li { margin-bottom: 4px; }
   .topbar, .progress-track, #screen-brief, #screen-game, .end-badge, .end-stats,
   .report-panel, .cert-btn-row, .foot-note, h1.end-title-only,
   .end-summary-text { display: none !important; }
-  #app, #screen-end { display: block !important; margin: 0 !important; padding: 0 !important; height: auto !important; overflow: visible !important; }
-  #end-panel {
-    display: flex !important;
-    align-items: center;
-    justify-content: center;
-    width: 210mm;
-    height: 297mm;
+  #app, #screen-end, #end-panel {
+    display: block !important;
     margin: 0 !important;
     padding: 0 !important;
+    height: auto !important;
+    overflow: visible !important;
     border: none !important;
     background: none !important;
     box-shadow: none !important;
-    overflow: hidden !important;
   }
   #end-panel::before { display: none !important; }
   .certificate {
@@ -1081,11 +1077,12 @@ details.knowledge .kbody li { margin-bottom: 4px; }
     box-shadow: none !important;
     background: var(--cert-paper) !important;
     position: static;
-    flex: none;
-    margin: 0;
+    /* 沒有任何祖先元素被強制設成整頁 297mm 高，避免碰到手機瀏覽器（如 iOS Safari）
+       印表機自動加頁首頁尾、導致內容被擠到第二頁的問題；改用比整頁略小的固定尺寸
+       ＋一點點上邊距，仍接近滿版但保留安全緩衝。 */
+    margin: 8mm auto 0;
     width: 210mm;
-    /* 略小於整頁高度，保留給 iOS 自動加上的頁首頁尾空間，避免溢出到第二頁 */
-    height: 282mm;
+    height: 278mm;
     max-width: none;
     padding: 60px 70px;
     border-radius: 0;
