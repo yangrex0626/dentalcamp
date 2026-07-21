@@ -141,23 +141,6 @@ const STAGES = [
       其中<strong>第一恆臼齒（俗稱六歲齒）</strong>通常是最早萌發的恆牙，且萌發位置在乳牙後方，不需要換牙就直接長出。</p>
     `,
     task: `
-      <div class="dev-flow">
-        <div class="dev-col">
-          <div class="dev-box source">成釉器<br><span class="dev-en">Enamel organ</span></div>
-          <div class="dev-arrow">↓</div>
-          <div class="dev-box target">？</div>
-        </div>
-        <div class="dev-col">
-          <div class="dev-box source">牙乳頭<br><span class="dev-en">Dental papilla</span></div>
-          <div class="dev-arrow">↓</div>
-          <div class="dev-box target">？　＋　？</div>
-        </div>
-        <div class="dev-col">
-          <div class="dev-box source">牙囊<br><span class="dev-en">Dental follicle</span></div>
-          <div class="dev-arrow">↓</div>
-          <div class="dev-box target">？　＋　？　＋　？</div>
-        </div>
-      </div>
       <p>找出三種胚胎構造最終發育成的「主要組織」——成釉器 → ？　牙乳頭 → ？（取主要負責硬組織形成者）　牙囊 → ？（取最主要的硬組織）。
       依照解謎慣例，取這三個組織英文名稱各自的第一個字母，查出每個字母在 26 個字母表中的序位（A=1, B=2 … Z=26），
       三個序位相加即為第一個數字。</p>
