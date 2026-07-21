@@ -5,7 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>臨床資料重建行動｜國防醫學大學 口腔醫學營・思維挑戰</title>
 <link rel="icon" type="image/jpeg" href="assets/dental-camp-logo.jpg">
-<link rel="stylesheet" href="style.css?v=202607211815">
+<link rel="stylesheet" href="style.css?v=202607211835">
 </head>
 <body>
 
@@ -49,6 +49,7 @@
       </div>
       <div class="topbar-right">
         <button class="sos-btn" id="sos-btn">SOS 求救提示（已用 <span id="sos-count">0</span> 次）</button>
+        <button class="staff-link-btn topbar-reset-btn" id="topbar-reset-btn">重置任務</button>
         <div class="timer" id="timer-display">00:00</div>
       </div>
     </div>
@@ -100,12 +101,28 @@
     </div>
   </div>
 
+  <!-- ============ 工作人員：密碼確認（提前結束／重置任務共用） ============ -->
+  <div id="staff-password-panel" class="stage-jump-overlay hidden">
+    <div class="stage-jump-card">
+      <div class="stage-jump-title" id="staff-password-title">工作人員專用</div>
+      <div class="input-group">
+        <label>工作人員密碼</label>
+        <input type="password" id="staff-password-input" autocomplete="off">
+      </div>
+      <div class="form-err" id="staff-password-err"></div>
+      <div class="stage-jump-btn-row">
+        <button class="start-btn" id="staff-password-confirm-btn">確認</button>
+        <button class="sos-btn" id="staff-password-cancel-btn">取消</button>
+      </div>
+    </div>
+  </div>
+
 </div>
 
 <script src="assets/emailjs.min.js"></script>
 <script src="assets/html2canvas.min.js"></script>
 <script src="assets/jspdf.umd.min.js"></script>
-<script src="data.js?v=202607211815"></script>
-<script src="app.js?v=202607211815"></script>
+<script src="data.js?v=202607211835"></script>
+<script src="app.js?v=202607211835"></script>
 </body>
 </html>

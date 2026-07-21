@@ -324,27 +324,70 @@ els.sosBtn.addEventListener("click", () => {
   renderStage();
 });
 
+/* ---------- 工作人員：密碼保護的共用操作（僅供檢查用，密碼非真正安全機制） ---------- */
+const STAFF_PASSWORD = "940626";
+
+const requireStaffPassword = (function setupStaffPasswordPrompt() {
+  const panel = document.getElementById("staff-password-panel");
+  const titleEl = document.getElementById("staff-password-title");
+  const passwordInput = document.getElementById("staff-password-input");
+  const errEl = document.getElementById("staff-password-err");
+  const confirmBtn = document.getElementById("staff-password-confirm-btn");
+  const cancelBtn = document.getElementById("staff-password-cancel-btn");
+  if (!panel || !confirmBtn) return () => {};
+
+  let pendingAction = null;
+
+  const closePanel = () => { panel.classList.add("hidden"); pendingAction = null; };
+  const doConfirm = () => {
+    if (passwordInput.value !== STAFF_PASSWORD) {
+      errEl.textContent = "密碼錯誤。";
+      return;
+    }
+    const action = pendingAction;
+    closePanel();
+    if (action) action();
+  };
+
+  confirmBtn.addEventListener("click", doConfirm);
+  cancelBtn.addEventListener("click", closePanel);
+  passwordInput.addEventListener("keydown", (e) => { if (e.key === "Enter") doConfirm(); });
+  panel.addEventListener("click", (e) => { if (e.target === panel) closePanel(); });
+
+  return function requireStaffPassword(title, onConfirm) {
+    pendingAction = onConfirm;
+    titleEl.textContent = title;
+    errEl.textContent = "";
+    passwordInput.value = "";
+    panel.classList.remove("hidden");
+    passwordInput.focus();
+  };
+})();
+
 /* ---------- 工作人員：提前結束任務 ---------- */
 if (els.endSessionBtn) {
   els.endSessionBtn.addEventListener("click", () => {
-    if (els.endSessionBtn.dataset.armed === "1") {
+    requireStaffPassword("工作人員專用：提前結束本隊任務", () => {
       state.finished = true;
       state.finishTimestamp = Date.now();
       saveState();
       enterEndScreen();
-      return;
-    }
-    els.endSessionBtn.dataset.armed = "1";
-    els.endSessionBtn.textContent = "再按一次確認結束（將直接前往結案畫面）";
-    setTimeout(() => {
-      els.endSessionBtn.dataset.armed = "0";
-      els.endSessionBtn.textContent = "工作人員專用：提前結束本隊任務";
-    }, 4000);
+    });
   });
 }
 
-/* ---------- 工作人員：跳至指定關卡（僅供檢查用，密碼非真正安全機制） ---------- */
-const STAGE_JUMP_PASSWORD = "940626";
+/* ---------- 工作人員：重置任務（topbar，遊戲中隨時可用） ---------- */
+const topbarResetBtn = document.getElementById("topbar-reset-btn");
+if (topbarResetBtn) {
+  topbarResetBtn.addEventListener("click", () => {
+    requireStaffPassword("工作人員專用：重置任務", () => {
+      clearState();
+      window.location.reload();
+    });
+  });
+}
+
+/* ---------- 工作人員：跳至指定關卡 ---------- */
 (function setupStageJump() {
   const panel = document.getElementById("stage-jump-panel");
   const passwordInput = document.getElementById("jump-password");
@@ -371,7 +414,7 @@ const STAGE_JUMP_PASSWORD = "940626";
   panel.addEventListener("click", (e) => { if (e.target === panel) closePanel(); });
 
   const doJump = () => {
-    if (passwordInput.value !== STAGE_JUMP_PASSWORD) {
+    if (passwordInput.value !== STAFF_PASSWORD) {
       errEl.textContent = "密碼錯誤。";
       return;
     }

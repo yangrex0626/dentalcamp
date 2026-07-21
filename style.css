@@ -148,6 +148,21 @@ body {
   cursor: not-allowed;
 }
 
+.topbar-reset-btn {
+  margin-top: 0;
+  font-family: var(--font-sans);
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--text-dim);
+  background: var(--bg-panel);
+  border: 1px solid var(--border-soft);
+  border-radius: 4px;
+  padding: 8px 12px;
+  text-decoration: none;
+  white-space: nowrap;
+}
+.topbar-reset-btn:hover { color: #e35f5f; border-color: #e35f5f; background: rgba(227,95,95,0.08); }
+
 /* ---------- 進度列 ---------- */
 .progress-track {
   display: flex;
@@ -1160,6 +1175,7 @@ details.knowledge .kbody li { margin-bottom: 4px; }
     gap: 10px;
   }
   .sos-btn { flex: 1; font-size: 12.5px; padding: 10px 8px; }
+  .topbar-reset-btn { flex: 0 0 auto; font-size: 11px; padding: 10px 8px; }
   .timer { flex: 0 0 auto; font-size: 20px; min-width: 84px; padding: 8px; }
   .brand { font-size: 13px; }
   .topbar-logo { width: 28px; height: 28px; }
