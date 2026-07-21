@@ -1034,6 +1034,41 @@ details.knowledge .kbody li { margin-bottom: 4px; }
   white-space: nowrap;
 }
 
+/* ---------- 工作人員：跳至指定關卡 ---------- */
+.stage-jump-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(6,9,12,0.92);
+  z-index: 100;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 24px;
+  animation: fadeIn 0.3s ease;
+}
+.stage-jump-card {
+  width: 100%;
+  max-width: 340px;
+  background: var(--bg-panel);
+  border: 1px solid var(--accent);
+  border-radius: 8px;
+  padding: 28px 26px;
+  text-align: left;
+  animation: cardIn 0.4s cubic-bezier(.2,.9,.3,1.2);
+  box-shadow: 0 0 0 1px rgba(47,143,124,0.15), 0 20px 60px rgba(0,0,0,0.5);
+}
+.stage-jump-title {
+  font-family: var(--font-serif);
+  font-size: 17px;
+  color: var(--accent-amber);
+  margin-bottom: 18px;
+  text-align: center;
+}
+.stage-jump-card .input-group { width: 100%; margin-bottom: 14px; }
+.stage-jump-card .input-group input { width: 100%; box-sizing: border-box; }
+.stage-jump-btn-row { display: flex; gap: 10px; margin-top: 6px; }
+.stage-jump-btn-row button { flex: 1; }
+
 /* ---------- footer ---------- */
 .foot-note {
   text-align: center;

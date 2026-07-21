@@ -343,6 +343,60 @@ if (els.endSessionBtn) {
   });
 }
 
+/* ---------- 工作人員：跳至指定關卡（僅供檢查用，密碼非真正安全機制） ---------- */
+const STAGE_JUMP_PASSWORD = "940626";
+(function setupStageJump() {
+  const panel = document.getElementById("stage-jump-panel");
+  const passwordInput = document.getElementById("jump-password");
+  const stageInput = document.getElementById("jump-stage");
+  const errEl = document.getElementById("jump-err");
+  const confirmBtn = document.getElementById("jump-confirm-btn");
+  const cancelBtn = document.getElementById("jump-cancel-btn");
+  const openBriefBtn = document.getElementById("stage-jump-open-brief");
+  const openGameBtn = document.getElementById("stage-jump-open-game");
+  if (!panel || !confirmBtn) return;
+
+  const openPanel = () => {
+    errEl.textContent = "";
+    passwordInput.value = "";
+    stageInput.value = "";
+    panel.classList.remove("hidden");
+    passwordInput.focus();
+  };
+  const closePanel = () => panel.classList.add("hidden");
+
+  if (openBriefBtn) openBriefBtn.addEventListener("click", openPanel);
+  if (openGameBtn) openGameBtn.addEventListener("click", openPanel);
+  cancelBtn.addEventListener("click", closePanel);
+  panel.addEventListener("click", (e) => { if (e.target === panel) closePanel(); });
+
+  const doJump = () => {
+    if (passwordInput.value !== STAGE_JUMP_PASSWORD) {
+      errEl.textContent = "密碼錯誤。";
+      return;
+    }
+    const n = parseInt(stageInput.value, 10);
+    if (!n || n < 1 || n > STAGES.length) {
+      errEl.textContent = `請輸入 1-${STAGES.length} 之間的關卡數。`;
+      return;
+    }
+    const targetIdx = n - 1;
+    if (!state.teamName) state.teamName = "工作人員測試";
+    state.started = true;
+    if (!state.startTimestamp) state.startTimestamp = Date.now();
+    state.finished = false;
+    state.finishTimestamp = null;
+    state.solved = STAGES.map((_, i) => i < targetIdx);
+    state.currentStage = targetIdx;
+    saveState();
+    closePanel();
+    enterGameScreen();
+  };
+  confirmBtn.addEventListener("click", doJump);
+  stageInput.addEventListener("keydown", (e) => { if (e.key === "Enter") doJump(); });
+  passwordInput.addEventListener("keydown", (e) => { if (e.key === "Enter") doJump(); });
+})();
+
 /* ---------- 互動決策樹（證物⑨等） ---------- */
 function renderDecisionTree(stage) {
   const mount = document.getElementById("decision-tree-mount");

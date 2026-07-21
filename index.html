@@ -5,7 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>臨床資料重建行動｜國防醫學大學 口腔醫學營・思維挑戰</title>
 <link rel="icon" type="image/jpeg" href="assets/dental-camp-logo.jpg">
-<link rel="stylesheet" href="style.css?v=202607211725">
+<link rel="stylesheet" href="style.css?v=202607211800">
 </head>
 <body>
 
@@ -32,6 +32,7 @@
         <button class="start-btn" id="start-btn">開始任務，啟動計時</button>
       </div>
       <div class="form-err" id="team-form-err"></div>
+      <button class="staff-link-btn" id="stage-jump-open-brief">工作人員專用：跳至指定關卡</button>
     </div>
   </section>
 
@@ -60,6 +61,7 @@
       每組每次可使用 SOS 提示查看下一條線索 · 提示會依關卡累計顯示
       <br>
       <button class="staff-link-btn" id="end-session-btn">工作人員專用：提前結束本隊任務</button>
+      <button class="staff-link-btn" id="stage-jump-open-game">工作人員專用：跳至指定關卡</button>
     </div>
   </section>
 
@@ -78,12 +80,32 @@
     <div class="panel" id="end-panel"></div>
   </section>
 
+  <!-- ============ 工作人員：跳至指定關卡 ============ -->
+  <div id="stage-jump-panel" class="stage-jump-overlay hidden">
+    <div class="stage-jump-card">
+      <div class="stage-jump-title">工作人員專用：跳至指定關卡</div>
+      <div class="input-group">
+        <label>工作人員密碼</label>
+        <input type="password" id="jump-password" autocomplete="off">
+      </div>
+      <div class="input-group">
+        <label>跳至第幾關（1-10）</label>
+        <input type="number" id="jump-stage" min="1" max="10" autocomplete="off">
+      </div>
+      <div class="form-err" id="jump-err"></div>
+      <div class="stage-jump-btn-row">
+        <button class="start-btn" id="jump-confirm-btn">前往</button>
+        <button class="sos-btn" id="jump-cancel-btn">取消</button>
+      </div>
+    </div>
+  </div>
+
 </div>
 
 <script src="assets/emailjs.min.js"></script>
 <script src="assets/html2canvas.min.js"></script>
 <script src="assets/jspdf.umd.min.js"></script>
-<script src="data.js?v=202607211745"></script>
-<script src="app.js?v=202607211745"></script>
+<script src="data.js?v=202607211800"></script>
+<script src="app.js?v=202607211800"></script>
 </body>
 </html>
