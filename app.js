@@ -376,14 +376,21 @@ if (els.endSessionBtn) {
   });
 }
 
-/* ---------- 工作人員：重置任務（topbar，遊戲中隨時可用） ---------- */
+/* ---------- 重置任務（topbar，遊戲中隨時可用，連按兩次確認，不需密碼） ---------- */
 const topbarResetBtn = document.getElementById("topbar-reset-btn");
 if (topbarResetBtn) {
   topbarResetBtn.addEventListener("click", () => {
-    requireStaffPassword("工作人員專用：重置任務", () => {
+    if (topbarResetBtn.dataset.armed === "1") {
       clearState();
       window.location.reload();
-    });
+      return;
+    }
+    topbarResetBtn.dataset.armed = "1";
+    topbarResetBtn.textContent = "再按一次確認重置";
+    setTimeout(() => {
+      topbarResetBtn.dataset.armed = "0";
+      topbarResetBtn.textContent = "重置任務";
+    }, 4000);
   });
 }
 
