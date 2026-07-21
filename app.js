@@ -497,7 +497,7 @@ function renderEnd() {
       </div>
       <div class="panel report-panel">${FINAL_REPORT_HTML}</div>
       <div class="cert-btn-row">
-        <button class="start-btn" id="print-cert-btn">列印隊伍完成證書</button>
+        <button class="start-btn" id="print-cert-btn">下載隊伍完成證書 PDF</button>
       </div>
       ${buildCertificateHtml(elapsedStr, dateStr, true)}
       <div class="cert-btn-row"><button class="sos-btn" id="reset-game-btn">重置任務（下一隊使用）</button></div>
@@ -515,7 +515,7 @@ function renderEnd() {
         院方感謝各位小組的努力，這段調查歷程已列入紀錄。A19 的完整病歷將交由下一組繼續調查。
       </p>
       <div class="cert-btn-row">
-        <button class="start-btn" id="print-cert-btn">列印任務參與證明</button>
+        <button class="start-btn" id="print-cert-btn">下載任務參與證明 PDF</button>
       </div>
       ${buildCertificateHtml(elapsedStr, dateStr, false)}
       <div class="cert-btn-row"><button class="sos-btn" id="reset-game-btn">重置任務（下一隊使用）</button></div>
@@ -523,7 +523,7 @@ function renderEnd() {
   }
 
   const printBtn = document.getElementById("print-cert-btn");
-  if (printBtn) printBtn.addEventListener("click", () => window.print());
+  if (printBtn) printBtn.addEventListener("click", () => downloadCertificatePdf(printBtn));
 
   const resetBtn = document.getElementById("reset-game-btn");
   if (resetBtn) resetBtn.addEventListener("click", () => {
@@ -633,6 +633,55 @@ function buildCertificateHtml(elapsedStr, dateStr, success) {
       </div>
     </div>
   `;
+}
+
+/* ---------- 證書 PDF 下載（前端直接產生，避開各家瀏覽器「列印」的排版差異） ---------- */
+async function downloadCertificatePdf(triggerBtn) {
+  const certEl = document.querySelector(".certificate");
+  if (!certEl || !window.html2canvas || !window.jspdf) return;
+
+  const originalLabel = triggerBtn.textContent;
+  triggerBtn.disabled = true;
+  triggerBtn.textContent = "產生 PDF 中，請稍候…";
+
+  try {
+    if (document.fonts && document.fonts.ready) {
+      await document.fonts.ready;
+    }
+    const canvas = await window.html2canvas(certEl, {
+      scale: 3,
+      backgroundColor: "#f9f3e4",
+      useCORS: true,
+    });
+    const imgData = canvas.toDataURL("image/jpeg", 0.95);
+
+    const { jsPDF } = window.jspdf;
+    const doc = new jsPDF({ orientation: "portrait", unit: "mm", format: "a4" });
+    const pageW = doc.internal.pageSize.getWidth();
+    const pageH = doc.internal.pageSize.getHeight();
+    const margin = 10;
+    const maxW = pageW - margin * 2;
+    const maxH = pageH - margin * 2;
+    const ratio = canvas.width / canvas.height;
+    let drawW = maxW;
+    let drawH = drawW / ratio;
+    if (drawH > maxH) {
+      drawH = maxH;
+      drawW = drawH * ratio;
+    }
+    const x = (pageW - drawW) / 2;
+    const y = (pageH - drawH) / 2;
+    doc.addImage(imgData, "JPEG", x, y, drawW, drawH);
+
+    const safeTeamName = String(state.teamName).replace(/[\\/:*?"<>|]/g, "_") || "隊伍";
+    doc.save(`臨床資料重建行動證書_${safeTeamName}.pdf`);
+  } catch (err) {
+    console.error(err);
+    alert("PDF 產生失敗，請稍後再試一次。");
+  } finally {
+    triggerBtn.disabled = false;
+    triggerBtn.textContent = originalLabel;
+  }
 }
 
 function escapeHtml(s) {
