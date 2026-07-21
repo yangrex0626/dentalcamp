@@ -489,7 +489,7 @@ function renderEnd() {
     els.endPanel.innerHTML = `
       <div class="end-badge success">CASE CLOSED</div>
       <h1 class="end-title-only">結案：A19 病歷重建完成</h1>
-      <p style="color:var(--text-muted); font-size:14px;">隊伍「${escapeHtml(state.teamName)}」已完整重建${STAGES.length}份證物。</p>
+      <p class="end-summary-text" style="color:var(--text-muted); font-size:14px;">隊伍「${escapeHtml(state.teamName)}」已完整重建${STAGES.length}份證物。</p>
       <div class="end-stats">
         <div class="stat-box"><div class="num">${elapsedStr}</div><div class="lbl">完成用時</div></div>
         <div class="stat-box"><div class="num">${state.sosUsedTotal}</div><div class="lbl">SOS 使用次數</div></div>
@@ -506,12 +506,12 @@ function renderEnd() {
     els.endPanel.innerHTML = `
       <div class="end-badge timeout">SESSION ENDED</div>
       <h1 class="end-title-only">任務提前結束</h1>
-      <p style="color:var(--text-muted); font-size:14px;">隊伍「${escapeHtml(state.teamName)}」完成了 ${solvedCount} / ${STAGES.length} 份證物的重建（任務由工作人員手動結束）。</p>
+      <p class="end-summary-text" style="color:var(--text-muted); font-size:14px;">隊伍「${escapeHtml(state.teamName)}」完成了 ${solvedCount} / ${STAGES.length} 份證物的重建（任務由工作人員手動結束）。</p>
       <div class="end-stats">
         <div class="stat-box"><div class="num">${solvedCount} / ${STAGES.length}</div><div class="lbl">證物完成度</div></div>
         <div class="stat-box"><div class="num">${state.sosUsedTotal}</div><div class="lbl">SOS 使用次數</div></div>
       </div>
-      <p style="color:var(--text-muted); font-size:14px; max-width:520px; margin:0 auto 20px;">
+      <p class="end-summary-text" style="color:var(--text-muted); font-size:14px; max-width:520px; margin:0 auto 20px;">
         院方感謝各位小組的努力，這段調查歷程已列入紀錄。A19 的完整病歷將交由下一組繼續調查。
       </p>
       <div class="cert-btn-row">

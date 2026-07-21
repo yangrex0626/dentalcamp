@@ -1057,9 +1057,18 @@ details.knowledge .kbody li { margin-bottom: 4px; }
 @media print {
   html, body { background: #fff; margin: 0; padding: 0; height: 100%; }
   .topbar, .progress-track, #screen-brief, #screen-game, .end-badge, .end-stats,
-  .report-panel, .cert-btn-row, .foot-note, h1.end-title-only { display: none !important; }
+  .report-panel, .cert-btn-row, .foot-note, h1.end-title-only,
+  .end-summary-text { display: none !important; }
   #screen-end { display: block !important; margin: 0; padding: 0; }
-  #end-panel { padding: 0; }
+  #end-panel {
+    padding: 0 !important;
+    margin: 0 !important;
+    border: none !important;
+    background: none !important;
+    box-shadow: none !important;
+    overflow: visible !important;
+  }
+  #end-panel::before { display: none !important; }
   .certificate {
     display: flex !important;
     flex-direction: column;
@@ -1070,6 +1079,7 @@ details.knowledge .kbody li { margin-bottom: 4px; }
     height: 100vh;
     max-width: none;
     border-radius: 0;
+    border-width: 0;
     box-sizing: border-box;
   }
   .certificate::before { inset: 14px; }
